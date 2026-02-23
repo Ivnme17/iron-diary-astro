@@ -1,0 +1,106 @@
+---
+import '../styles/global.css';
+import DemoBanner from '../components/DemoBanner.astro';
+import WorkoutCard from '../components/WorkoutCard.tsx';
+import { Dumbbell, Plus } from 'lucide-react';
+
+let workouts = [];
+let stats = { total_workouts: 0, total_exercises: 0, total_kg: 0 };
+let fetchError = false;
+
+try {
+  // SSR fetch to FastAPI backend inside Docker / localhost
+  const [workoutsRes, statsRes] = await Promise.all([
+    fetch('http://127.0.0.1:8000/api/workouts'),
+    fetch('http://127.0.0.1:8000/api/stats')
+  ]);
+  
+  if (workoutsRes.ok) workouts = await workoutsRes.json();
+  if (statsRes.ok) stats = await statsRes.json();
+} catch (e) {
+  console.error("Error fetching from backend:", e);
+  fetchError = true;
+}
+---
+
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>Dashboard - Iron Diary Astro</title>
+</head>
+<body class="min-h-screen">
+    <DemoBanner />
+
+    <!-- Header -->
+    <header class="sticky top-0 z-10 border-b border-border bg-card/80 backdrop-blur-md">
+        <div class="container mx-auto flex items-center justify-between px-4 py-4">
+            <div class="flex items-center gap-3">
+                <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-primary">
+                    <Dumbbell className="h-5 w-5 text-primary-foreground" />
+                </div>
+                <h1 class="text-3xl">DIARIO DE HIERRO</h1>
+            </div>
+            <div class="flex items-center gap-2">
+                <a href="/" class="inline-flex h-9 items-center justify-center rounded-md text-xs font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground px-3">
+                    ← Landing
+                </a>
+            </div>
+        </div>
+    </header>
+
+    {fetchError ? (
+      <div class="container mx-auto p-8 text-center text-destructive">
+        <h2 class="text-2xl mb-2">Error de Conexión</h2>
+        <p>No se pudo conectar con el backend FastAPI en <code>http://127.0.0.1:8000</code>.</p>
+        <p class="text-muted-foreground mt-2">Asegúrate de que el servidor uvicorn está corriendo.</p>
+      </div>
+    ) : (
+      <>
+        <!-- Stats Bar -->
+        <div class="border-b border-border bg-card/40">
+            <div class="container mx-auto grid grid-cols-3 divide-x divide-border px-4 py-4 text-center">
+                <div>
+                    <p class="text-2xl text-primary font-bold" style="font-family: var(--font-display)">
+                        {stats.total_workouts}
+                    </p>
+                    <p class="text-xs text-muted-foreground uppercase tracking-wide">Entrenamientos</p>
+                </div>
+                <div>
+                    <p class="text-2xl text-primary font-bold" style="font-family: var(--font-display)">
+                        {stats.total_exercises}
+                    </p>
+                    <p class="text-xs text-muted-foreground uppercase tracking-wide">Ejercicios</p>
+                </div>
+                <div>
+                    <p class="text-2xl text-primary font-bold" style="font-family: var(--font-display)">
+                        {stats.total_kg}k
+                    </p>
+                    <p class="text-xs text-muted-foreground uppercase tracking-wide">kg Totales</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Workout Grid -->
+        <main class="container mx-auto px-4 py-8">
+            <!-- Add New Workout Button -->
+            <div class="mb-6 flex justify-end">
+                <a
+                    href="/workout"
+                    class="inline-flex h-11 items-center justify-center rounded-md bg-primary px-6 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+                >
+                    <Plus className="h-5 w-5 mr-2" /> Nuevo Entrenamiento
+                </a>
+            </div>
+            
+            <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                {workouts.map((workout: any, i: number) => (
+                    <!-- React Island for interactivity -->
+                    <WorkoutCard client:load workout={workout} index={i} />
+                ))}
+            </div>
+        </main>
+      </>
+    )}
+</body>
+</html>

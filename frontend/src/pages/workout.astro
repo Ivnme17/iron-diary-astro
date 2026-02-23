@@ -1,0 +1,542 @@
+---
+import '../styles/global.css';
+import DemoBanner from '../components/DemoBanner.astro';
+import { Dumbbell, ArrowLeft, Save, Plus } from 'lucide-react';
+---
+
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>Nuevo Entrenamiento - Iron Diary Astro</title>
+</head>
+<body class="min-h-screen">
+    <DemoBanner />
+
+    <!-- Header -->
+    <header class="sticky top-0 z-10 border-b border-border bg-card/80 backdrop-blur-md">
+        <div class="container mx-auto flex items-center justify-between px-4 py-4">
+            <div class="flex items-center gap-3">
+                <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-primary">
+                    <Dumbbell className="h-5 w-5 text-primary-foreground" />
+                </div>
+                <h1 class="text-3xl">NUEVO ENTRENAMIENTO</h1>
+            </div>
+            <div class="flex items-center gap-2">
+                <a href="/dashboard" class="inline-flex h-9 items-center justify-center rounded-md text-xs font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground px-3">
+                    <ArrowLeft className="h-3.5 w-3.5 mr-1" /> Dashboard
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Form Container -->
+    <main class="container mx-auto px-4 py-8 max-w-4xl">
+        <div class="rounded-xl border border-border bg-card p-6">
+            <form id="workoutForm" class="space-y-6">
+                        <!-- Basic Info -->
+                        <div class="grid gap-4 sm:grid-cols-2">
+                            <div>
+                                <label for="routineName" class="block text-sm font-medium text-foreground mb-2">
+                                    Nombre de Rutina
+                                </label>
+                                <input
+                                    type="text"
+                                    id="routineName"
+                                    name="routineName"
+                                    placeholder="Ej: Push Day, Pull Day, Leg Day"
+                                    class="w-full h-10 rounded-md border border-border bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                                    required
+                                />
+                            </div>
+                            <div>
+                                <label for="workoutDate" class="block text-sm font-medium text-foreground mb-2">
+                                    Fecha
+                                </label>
+                                <input
+                                    type="date"
+                                    id="workoutDate"
+                                    name="workoutDate"
+                                    class="w-full h-10 rounded-md border border-border bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                                    required
+                                />
+                            </div>
+                        </div>
+
+                        <!-- Exercises Section -->
+                        <div>
+                            <div class="flex items-center justify-between mb-4">
+                                <h2 class="text-xl font-semibold text-foreground">Ejercicios</h2>
+                                <button
+                                    type="button"
+                                    id="addExerciseBtn"
+                                    class="inline-flex h-9 items-center justify-center rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+                                >
+                                    <Plus className="h-4 w-4 mr-2" /> Añadir Ejercicio
+                                </button>
+                            </div>
+
+                            <!-- Exercise List -->
+                            <div id="exercisesList" class="space-y-4">
+                                <!-- Initial exercise -->
+                                <div class="rounded-lg border border-border bg-secondary/20 p-4">
+                                    <div class="grid gap-4">
+                                        <div class="grid gap-3 sm:grid-cols-5">
+                                            <div class="sm:col-span-2">
+                                                <input
+                                                    type="text"
+                                                    placeholder="Nombre del ejercicio"
+                                                    class="exercise-name w-full h-9 rounded-md border border-border bg-background px-3 py-1 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                                                />
+                                            </div>
+                                            <div>
+                                                <input
+                                                    type="number"
+                                                    placeholder="Series"
+                                                    min="1"
+                                                    max="10"
+                                                    value="4"
+                                                    class="exercise-sets w-full h-9 rounded-md border border-border bg-background px-3 py-1 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                                                />
+                                            </div>
+                                            <div>
+                                                <input
+                                                    type="number"
+                                                    placeholder="Reps"
+                                                    min="1"
+                                                    max="50"
+                                                    value="10"
+                                                    class="exercise-reps w-full h-9 rounded-md border border-border bg-background px-3 py-1 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                                                />
+                                            </div>
+                                            <div class="flex gap-2">
+                                                <input
+                                                    type="number"
+                                                    placeholder="Peso kg"
+                                                    min="0"
+                                                    step="2.5"
+                                                    value="0"
+                                                    class="exercise-weight w-full h-9 rounded-md border border-border bg-background px-3 py-1 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                                                />
+                                            </div>
+                                        </div>
+                                        <!-- Exercise GIF -->
+                                        <div class="exercise-gif-container bg-muted/30 rounded-lg p-3 text-center">
+                                            <div class="text-xs text-muted-foreground mb-2">Demostración del ejercicio</div>
+                                            <div class="exercise-gif w-full h-32 bg-muted rounded-md flex items-center justify-center">
+                                                <span class="text-xs text-muted-foreground">Escribe un ejercicio para ver la demo</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="flex justify-end gap-3 pt-4 border-t border-border">
+                            <a
+                                href="/dashboard"
+                                class="inline-flex h-10 items-center justify-center rounded-md border border-border bg-background px-6 text-sm font-medium text-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
+                            >
+                                Cancelar
+                            </a>
+                            <button
+                                type="submit"
+                                class="inline-flex h-10 items-center justify-center rounded-md bg-primary px-6 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+                            >
+                                <Save className="h-4 w-4 mr-2" /> Guardar Entrenamiento
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Form Logic -->
+    <script>
+        // Exercise GIFs database
+        const exerciseGifs: { [key: string]: string } = {
+            'press banca': 'https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExbnJmZzFqaHZ6b3NqZ3FqamN2d2h2amN2c3hlcDlqY3ZidmN3b2U4aiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/l4FGkXcEC9K2t8yBi/giphy.gif',
+            'sentadilla': 'https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExbnJmZzFqaHZ6b3NqZ3FqamN2d2h2amN2c3hlcDlqY3ZidmN3b2U4aiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/l4FGkXcEC9K2t8yBi/giphy.gif',
+            'peso muerto': 'https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExbnJmZzFqaHZ6b3NqZ3FqamN2d2h2amN2c3hlcDlqY3ZidmN3b2U4aiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/l4FGkXcEC9K2t8yBi/giphy.gif',
+            'dominadas': 'https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExbnJmZzFqaHZ6b3NqZ3FqamN2d2h2amN2c3hlcDlqY3ZidmN3b2U4aiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/l4FGkXcEC9K2t8yBi/giphy.gif',
+            'remo': 'https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExbnJmZzFqaHZ6b3NqZ3FqamN2d2h2amN2c3hlcDlqY3ZidmN3b2U4aiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/l4FGkXcEC9K2t8yBi/giphy.gif',
+            'curl bíceps': 'https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExbnJmZzFqaHZ6b3NqZ3FqamN2d2h2amN2c3hlcDlqY3ZidmN3b2U4aiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/l4FGkXcEC9K2t8yBi/giphy.gif',
+            'fondos': 'https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExbnJmZzFqaHZ6b3NqZ3FqamN2d2h2amN2c3hlcDlqY3ZidmN3b2U4aiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/l4FGkXcEC9K2t8yBi/giphy.gif',
+            'prensa': 'https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExbnJmZzFqaHZ6b3NqZ3FqamN2d2h2amN2c3hlcDlqY3ZidmN3b2U4aiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/l4FGkXcEC9K2t8yBi/giphy.gif',
+            'hip thrust': 'https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExbnJmZzFqaHZ6b3NqZ3FqamN2d2h2amN2c3hlcDlqY3ZidmN3b2U4aiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/l4FGkXcEC9K2t8yBi/giphy.gif',
+        };
+
+        // Routine suggestions
+        const routineSuggestions = [
+            'Push Day',
+            'Pull Day', 
+            'Leg Day',
+            'Full Body',
+            'Upper Body',
+            'Lower Body',
+            'Cardio + Fuerza',
+            'HIIT Training',
+            'PPL (Push/Pull/Legs)',
+            'Bro Split',
+            'Full Body 3x',
+            'Upper/Lower Split'
+        ];
+
+        // Exercise suggestions
+        const exerciseSuggestions = [
+            // Push Day
+            'Press Banca',
+            'Press Inclinado Mancuernas',
+            'Press Declinado',
+            'Fondos en Paralelas',
+            'Flexiones (Push-ups)',
+            'Aperturas Cable',
+            'Aperturas Mancuernas',
+            'Crucifijo Máquina',
+            'Press Militar',
+            'Press Arnold',
+            'Elevaciones Laterales',
+            'Elevaciones Frontales',
+            'Extensión Tríceps Polea',
+            'Press Francés',
+            'Dips Tríceps',
+            'Tríceps Mancuernas',
+            
+            // Pull Day
+            'Dominadas',
+            'Jalón al Pecho',
+            'Remo con Barra',
+            'Remo Máquina',
+            'Remo Mancuernas',
+            'Palo Músculo',
+            'Face Pulls',
+            'Encogimientos Trapecio',
+            'Elevaciones Proyección',
+            'Curl Bíceps Barra',
+            'Curl Bíceps Mancuernas',
+            'Curl Martillo',
+            'Curl Concentrado',
+            'Curl Inclinado',
+            'Curl Polea',
+            
+            // Leg Day
+            'Sentadilla Trasera',
+            'Sentadilla Frontal',
+            'Sentadilla Goblet',
+            'Sentadilla Búlgara',
+            'Prensa de Piernas',
+            'Zancadas',
+            'Peso Muerto',
+            'Peso Muerto Rumano',
+            'Hip Thrust',
+            'Curl Femoral',
+            'Extensión Cuádriceps',
+            'Elevación de Gemelos',
+            'Gemelos en Máquina',
+            'Abducción de Cadera',
+            'Aducción de Cadera',
+            
+            // Core
+            'Plancha Frontal',
+            'Plancha Lateral',
+            'Crunch Abdominal',
+            'Elevación de Piernas',
+            'Mountain Climbers',
+            'Russian Twists',
+            'Leg Raises',
+            'Hiperextensiones',
+            'Bird Dog',
+            'Dead Bug',
+            
+            // Cardio
+            'Saltos la Cuerda',
+            'Burpees',
+            'Jumping Jacks',
+            'Mountain Biker',
+            'Correr',
+            'Bicicleta Estática',
+            'Elíptica',
+            'Remo Estático'
+        ];
+
+        // Autocomplete functionality
+        function createAutocomplete(input: HTMLInputElement, suggestions: string[], type: 'routine' | 'exercise'): void {
+            let currentFocus: number = -1;
+            
+            // Create suggestions container
+            const suggestionsContainer = document.createElement('div');
+            suggestionsContainer.className = 'autocomplete-suggestions absolute z-50 w-full bg-card border border-border rounded-md shadow-lg max-h-48 overflow-y-auto hidden';
+            
+            // Position container relative to input parent
+            const parent = input.parentElement;
+            if (parent) {
+                parent.style.position = 'relative';
+                parent.appendChild(suggestionsContainer);
+            }
+            
+            input.addEventListener('input', function() {
+                const value = this.value.toLowerCase();
+                closeAllLists();
+                
+                if (!value) return;
+                
+                const filteredSuggestions = suggestions.filter(suggestion => 
+                    suggestion.toLowerCase().includes(value)
+                );
+                
+                if (filteredSuggestions.length === 0) return;
+                
+                filteredSuggestions.forEach((suggestion, index) => {
+                    const item = document.createElement('div');
+                    item.className = 'autocomplete-item px-3 py-2 cursor-pointer hover:bg-accent text-sm';
+                    item.innerHTML = `<strong>${suggestion.substring(0, value.length)}</strong>${suggestion.substring(value.length)}`;
+                    item.addEventListener('click', function() {
+                        input.value = suggestion;
+                        closeAllLists();
+                        input.dispatchEvent(new Event('input')); // Trigger input event for GIF/muscle map updates
+                    });
+                    
+                    item.addEventListener('mouseenter', function() {
+                        removeActive(suggestionsContainer);
+                        currentFocus = index;
+                        addActive(suggestionsContainer);
+                    });
+                    
+                    suggestionsContainer.appendChild(item);
+                });
+                
+                suggestionsContainer.classList.remove('hidden');
+            });
+            
+            input.addEventListener('keydown', function(e) {
+                const items = suggestionsContainer.getElementsByClassName('autocomplete-item');
+                if (items.length === 0) return;
+                
+                if (e.key === 'ArrowDown') {
+                    currentFocus++;
+                    addActive(suggestionsContainer);
+                } else if (e.key === 'ArrowUp') {
+                    currentFocus--;
+                    addActive(suggestionsContainer);
+                } else if (e.key === 'Enter') {
+                    e.preventDefault();
+                    if (currentFocus > -1) {
+                        (items[currentFocus] as HTMLElement).click();
+                    }
+                } else if (e.key === 'Escape') {
+                    closeAllLists();
+                }
+            });
+            
+            function addActive(container: HTMLElement): void {
+                removeActive(container);
+                if (currentFocus >= 0 && currentFocus < container.children.length) {
+                    (container.children[currentFocus] as HTMLElement).classList.add('bg-accent');
+                }
+            }
+            
+            function removeActive(container: HTMLElement): void {
+                const items = container.getElementsByClassName('autocomplete-item');
+                for (let item of items) {
+                    (item as HTMLElement).classList.remove('bg-accent');
+                }
+            }
+            
+            function closeAllLists(): void {
+                suggestionsContainer.innerHTML = '';
+                suggestionsContainer.classList.add('hidden');
+                currentFocus = -1;
+            }
+            
+            // Close suggestions when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!input.contains(e.target as Node) && !suggestionsContainer.contains(e.target as Node)) {
+                    closeAllLists();
+                }
+            });
+        };
+
+        function updateExerciseGif(exerciseInput: HTMLInputElement, gifContainer: HTMLElement): void {
+            const exerciseName = exerciseInput.value.toLowerCase();
+            let gifUrl: string | null = null;
+            
+            // Find matching exercise
+            Object.keys(exerciseGifs).forEach((key: string) => {
+                if (exerciseName.includes(key) && exerciseGifs[key]) {
+                    gifUrl = exerciseGifs[key]!;
+                }
+            });
+
+            if (gifUrl) {
+                gifContainer.innerHTML = `<img src="${gifUrl}" alt="Exercise demo" class="w-full h-32 object-cover rounded-md" />`;
+            } else {
+                gifContainer.innerHTML = '<span class="text-xs text-muted-foreground">Escribe un ejercicio para ver la demo</span>';
+            }
+        }
+
+        // Set today's date as default
+        document.addEventListener('DOMContentLoaded', function() {
+            const dateInput = document.getElementById('workoutDate') as HTMLInputElement;
+            if (dateInput) {
+                dateInput.value = new Date().toISOString().split('T')[0];
+            }
+
+            // Initialize autocomplete for routine name
+            const routineInput = document.getElementById('routineName') as HTMLInputElement;
+            if (routineInput) {
+                createAutocomplete(routineInput, routineSuggestions, 'routine');
+            }
+
+            // Initialize autocomplete for existing exercise inputs
+            document.querySelectorAll('.exercise-name').forEach((input: Element) => {
+                const htmlInput = input as HTMLInputElement;
+                createAutocomplete(htmlInput, exerciseSuggestions, 'exercise');
+            });
+
+            // Add exercise functionality
+            const addExerciseBtn = document.getElementById('addExerciseBtn');
+            if (addExerciseBtn) {
+                addExerciseBtn.addEventListener('click', function() {
+                    const exercisesList = document.getElementById('exercisesList');
+                    if (exercisesList) {
+                        const exerciseDiv = document.createElement('div');
+                        exerciseDiv.className = 'rounded-lg border border-border bg-secondary/20 p-4';
+                        exerciseDiv.innerHTML = `
+                            <div class="grid gap-4">
+                                <div class="grid gap-3 sm:grid-cols-5">
+                                    <div class="sm:col-span-2">
+                                        <input
+                                            type="text"
+                                            placeholder="Nombre del ejercicio"
+                                            class="exercise-name w-full h-9 rounded-md border border-border bg-background px-3 py-1 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                                        />
+                                    </div>
+                                    <div>
+                                        <input
+                                            type="number"
+                                            placeholder="Series"
+                                            min="1"
+                                            max="10"
+                                            value="4"
+                                            class="exercise-sets w-full h-9 rounded-md border border-border bg-background px-3 py-1 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                                        />
+                                    </div>
+                                    <div>
+                                        <input
+                                            type="number"
+                                            placeholder="Reps"
+                                            min="1"
+                                            max="50"
+                                            value="10"
+                                            class="exercise-reps w-full h-9 rounded-md border border-border bg-background px-3 py-1 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                                        />
+                                    </div>
+                                    <div class="flex gap-2">
+                                        <input
+                                            type="number"
+                                            placeholder="Peso kg"
+                                            min="0"
+                                            step="2.5"
+                                            value="0"
+                                            class="exercise-weight w-full h-9 rounded-md border border-border bg-background px-3 py-1 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                                        />
+                                        <button
+                                            type="button"
+                                            onclick="this.closest('.rounded-lg').remove(); updateMuscleMap();"
+                                            class="h-9 w-9 rounded-md border border-destructive/20 bg-destructive/10 text-destructive transition-colors hover:bg-destructive/20"
+                                            title="Eliminar ejercicio"
+                                        >
+                                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
+                                <!-- Exercise GIF -->
+                                <div class="exercise-gif-container bg-muted/30 rounded-lg p-3 text-center">
+                                    <div class="text-xs text-muted-foreground mb-2">Demostración del ejercicio</div>
+                                    <div class="exercise-gif w-full h-32 bg-muted rounded-md flex items-center justify-center">
+                                        <span class="text-xs text-muted-foreground">Escribe un ejercicio para ver la demo</span>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                        exercisesList.appendChild(exerciseDiv);
+                        
+                        // Add event listener to new exercise input
+                        const newExerciseInput = exerciseDiv.querySelector('.exercise-name') as HTMLInputElement;
+                        const newGifContainer = exerciseDiv.querySelector('.exercise-gif') as HTMLElement;
+                        
+                        if (newExerciseInput && newGifContainer) {
+                            // Initialize autocomplete for new exercise input
+                            createAutocomplete(newExerciseInput, exerciseSuggestions, 'exercise');
+                            
+                            newExerciseInput.addEventListener('input', () => {
+                                updateExerciseGif(newExerciseInput, newGifContainer);
+                            });
+                        }
+                    }
+                });
+            }
+
+            // Add event listeners to existing exercise inputs
+            document.querySelectorAll('.exercise-name').forEach((input: Element) => {
+                const htmlInput = input as HTMLInputElement;
+                htmlInput.addEventListener('input', function(this: HTMLInputElement) {
+                    const gifContainer = this.closest('.rounded-lg')?.querySelector('.exercise-gif') as HTMLElement;
+                    if (gifContainer) {
+                        updateExerciseGif(this, gifContainer);
+                    }
+                });
+            });
+
+            // Form submission
+            const workoutForm = document.getElementById('workoutForm');
+            if (workoutForm) {
+                workoutForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    
+                    const exercises: Array<{name: string, sets: number, reps: number, weight: number}> = [];
+                    const exerciseElements = document.querySelectorAll('#exercisesList > div');
+                    
+                    exerciseElements.forEach(element => {
+                        const nameInput = element.querySelector('.exercise-name') as HTMLInputElement;
+                        const setsInput = element.querySelector('.exercise-sets') as HTMLInputElement;
+                        const repsInput = element.querySelector('.exercise-reps') as HTMLInputElement;
+                        const weightInput = element.querySelector('.exercise-weight') as HTMLInputElement;
+                        
+                        if (nameInput && nameInput.value.trim()) {
+                            exercises.push({
+                                name: nameInput.value.trim(),
+                                sets: parseInt(setsInput?.value || '4') || 4,
+                                reps: parseInt(repsInput?.value || '10') || 10,
+                                weight: parseFloat(weightInput?.value || '0') || 0
+                            });
+                        }
+                    });
+
+                    const routineNameInput = document.getElementById('routineName') as HTMLInputElement;
+                    const workoutDateInput = document.getElementById('workoutDate') as HTMLInputElement;
+                    
+                    const workout = {
+                        routine_name: routineNameInput?.value || '',
+                        date: workoutDateInput?.value || '',
+                        exercises: exercises
+                    };
+                    
+                    // In a real app, this would send the data to the backend
+                    // For demo purposes, we'll just show an alert and redirect
+                    alert('Entrenamiento guardado (solo demo - no se guarda realmente)\\n\\n' + 
+                          'Rutina: ' + workout.routine_name + '\\n' +
+                          'Fecha: ' + workout.date + '\\n' +
+                          'Ejercicios: ' + workout.exercises.length);
+                    
+                    window.location.href = '/dashboard';
+                });
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,72 @@
+@import 'tailwindcss';
+
+@theme {
+    --color-background: hsl(220 15% 8%);
+    --color-foreground: hsl(40 10% 92%);
+
+    --color-card: hsl(220 14% 12%);
+    --color-card-foreground: hsl(40 10% 92%);
+
+    --color-primary: hsl(28 90% 55%);
+    --color-primary-foreground: hsl(220 15% 8%);
+
+    --color-secondary: hsl(220 12% 18%);
+    --color-secondary-foreground: hsl(40 10% 80%);
+
+    --color-muted: hsl(220 12% 16%);
+    --color-muted-foreground: hsl(220 10% 55%);
+
+    --color-border: hsl(220 12% 20%);
+    --color-input: hsl(220 12% 20%);
+    --color-ring: hsl(28 90% 55%);
+
+    --font-display: 'Bebas Neue', sans-serif;
+    --font-body: 'Inter', sans-serif;
+
+    --animate-fade-in: fade-in 0.5s ease-out;
+    --animate-slide-up: slide-up 0.5s ease-out;
+}
+
+@layer base {
+
+    *,
+    ::before,
+    ::after {
+        border-color: var(--color-border);
+    }
+
+    body {
+        background-color: var(--color-background);
+        color: var(--color-foreground);
+        @apply font-sans;
+    }
+
+    h1,
+    h2,
+    h3 {
+        font-family: var(--font-display);
+        letter-spacing: 0.04em;
+    }
+}
+
+@keyframes fade-in {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slide-up {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
