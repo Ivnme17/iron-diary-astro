@@ -16,18 +16,84 @@ interface Workout {
     exercises: Exercise[];
 }
 
+// Function to get emoji for routine names
+function getRoutineEmoji(routineName: string): string {
+    const name = routineName.toLowerCase();
+    
+    // Push Day variations
+    if (name.includes('push') || name.includes('pecho') || name.includes('biceps') || name.includes('triceps') || name.includes('hombros')) {
+        return '💪';
+    }
+    
+    // Pull Day variations
+    if (name.includes('pull') || name.includes('espalda') || name.includes('dorsal') || name.includes('jalón')) {
+        return '🎯';
+    }
+    
+    // Leg Day variations
+    if (name.includes('leg') || name.includes('pierna') || name.includes('cuádriceps') || name.includes('femoral') || name.includes('sentadilla')) {
+        return '🦵';
+    }
+    
+    // Full Body variations
+    if (name.includes('full') || name.includes('completo') || name.includes('total')) {
+        return '🏋️';
+    }
+    
+    // Upper Body variations
+    if (name.includes('upper') || name.includes('superior')) {
+        return '💪';
+    }
+    
+    // Lower Body variations
+    if (name.includes('lower') || name.includes('inferior')) {
+        return '🦵';
+    }
+    
+    // Cardio variations
+    if (name.includes('cardio') || name.includes('correr') || name.includes('carrera')) {
+        return '🔥';
+    }
+    
+    // HIIT variations
+    if (name.includes('hiit') || name.includes('intenso')) {
+        return '⚡';
+    }
+    
+    // PPL variations
+    if (name.includes('ppl') || name.includes('push/pull')) {
+        return '📊';
+    }
+    
+    // Bro Split variations
+    if (name.includes('bro') || name.includes('split')) {
+        return '💎';
+    }
+    
+    // Default emoji
+    return '🏋️';
+}
+
 export default function WorkoutCard({ workout, index }: { workout: Workout; index: number }) {
     const [expanded, setExpanded] = useState(false);
+    const routineEmoji = getRoutineEmoji(workout.routine_name);
+    const cardStyle = {
+        animationDelay: `${index * 80}ms`,
+        animationFillMode: "both" as const,
+    };
+    const titleStyle = {
+        fontFamily: "var(--font-display)",
+    };
 
     return (
         <div
             className="animate-slide-up rounded-xl border border-border bg-card p-5 transition-all hover:border-primary/30 hover:shadow-lg"
-            style={{ animationDelay: `${index * 80}ms`, animationFillMode: "both" }}
+            style={cardStyle}
         >
             <div className="mb-3 flex items-start justify-between">
                 <div>
-                    <h3 className="text-2xl text-foreground" style={{ fontFamily: "var(--font-display)" }}>
-                        {workout.routine_name.toUpperCase()}
+                    <h3 className="text-2xl text-foreground" style={titleStyle}>
+                        {routineEmoji} {workout.routine_name.toUpperCase()}
                     </h3>
                     <p className="flex items-center gap-1 text-sm text-muted-foreground">
                         <Calendar className="h-3.5 w-3.5" />
@@ -48,6 +114,7 @@ export default function WorkoutCard({ workout, index }: { workout: Workout; inde
                     </button>
                     <a
                         href="/workout"
+                        title="Editar entrenamiento"
                         className="inline-flex h-8 w-8 items-center justify-center rounded-md text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
                     >
                         <Edit className="h-4 w-4" />

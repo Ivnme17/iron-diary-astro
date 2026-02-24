@@ -1,7 +1,7 @@
 ---
 import '../styles/global.css';
 import DemoBanner from '../components/DemoBanner.astro';
-import { Dumbbell, ArrowRight, BarChart2, Calendar, Shield, Zap } from 'lucide-react';
+import { Dumbbell, ArrowRight, BarChart2, Calendar, Shield, Zap, TrendingUp, Youtube } from 'lucide-react';
 
 const features = [
   {
@@ -32,19 +32,33 @@ const features = [
 <body class="min-h-screen">
     <DemoBanner />
 
-    <!-- Hero -->
-    <section class="flex flex-col items-center justify-center px-4 py-24 text-center">
-        <div class="animate-fade-in">
-            <div class="mx-auto mb-6 flex h-24 w-24 items-center justify-center rounded-3xl bg-primary shadow-2xl">
+    <!-- Hero with Gym GIF Background -->
+    <section class="relative flex flex-col items-center justify-center px-4 py-24 text-center overflow-hidden min-h-screen">
+        <!-- Background GIF with Dark Overlay -->
+        <div class="absolute inset-0 z-0 hero-bg">
+            <img 
+                src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=1920&h=1080&fit=crop&auto=format&q=80&sat=0" 
+                alt="Gym background" 
+                class="w-full h-full object-cover"
+            />
+            <div class="absolute inset-0 bg-gradient-to-b from-black/90 via-black/70 to-black/90"></div>
+        </div>
+        
+        <!-- Content -->
+        <div class="relative z-10 hero-content">
+            <div class="mx-auto mb-6 flex h-24 w-24 items-center justify-center rounded-3xl bg-primary shadow-2xl backdrop-blur-sm bg-primary/90">
                 <Dumbbell className="h-12 w-12 text-primary-foreground" />
             </div>
-            <h1 class="text-7xl tracking-wider">DIARIO DE HIERRO</h1>
-            <p class="mx-auto mt-4 max-w-lg text-lg text-muted-foreground">
+            <h1 class="text-7xl tracking-wider text-white drop-shadow-2xl hero-title">DIARIO DE HIERRO</h1>
+            <p class="mx-auto mt-4 max-w-lg text-lg text-white/90 drop-shadow-lg hero-subtitle">
                 Registra tus entrenamientos. Controla tu progreso. Forja tu mejor versión.
             </p>
             <div class="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
-                <a href="/dashboard" class="inline-flex h-11 items-center justify-center rounded-md bg-primary px-8 text-base font-medium text-primary-foreground transition-colors hover:bg-primary/90">
+                <a href="/dashboard" class="inline-flex h-11 items-center justify-center rounded-md bg-primary px-8 text-base font-medium text-primary-foreground transition-all hover:bg-primary/90 hover:scale-105 shadow-xl backdrop-blur-sm hero-button">
                     Ver Demo <ArrowRight className="ml-2 h-5 w-5" />
+                </a>
+                <a href="/fitness-hub" class="inline-flex h-11 items-center justify-center rounded-md border border-red-600/30 bg-red-600/10 px-8 text-base font-medium text-red-600 transition-all hover:bg-red-600/20 hover:scale-105 shadow-xl backdrop-blur-sm hero-button">
+                    📺 IronTV <Youtube className="ml-2 h-5 w-5" />
                 </a>
             </div>
         </div>

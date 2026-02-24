@@ -120,39 +120,26 @@ import { Dumbbell, ArrowLeft, Save, Plus } from 'lucide-react';
                                                 />
                                             </div>
                                         </div>
-                                        <!-- Exercise GIF -->
-                                        <div class="exercise-gif-container bg-muted/30 rounded-lg p-3 text-center">
-                                            <div class="text-xs text-muted-foreground mb-2">Demostración del ejercicio</div>
-                                            <div class="exercise-gif w-full h-32 bg-muted rounded-md flex items-center justify-center">
-                                                <span class="text-xs text-muted-foreground">Escribe un ejercicio para ver la demo</span>
-                                            </div>
-                                        </div>
-                                        
                                         <!-- Rest Timer -->
-                                        <div class="rest-timer-container bg-muted/30 rounded-lg p-3">
-                                            <div class="flex items-center justify-between mb-2">
-                                                <label class="text-xs text-muted-foreground">Descanso (segundos)</label>
+                                        <div class="rest-timer-container bg-muted/30 rounded-lg p-3 text-center">
+                                            <div class="text-xs text-muted-foreground mb-2">Temporizador de Descanso</div>
+                                            <div class="flex items-center gap-2 mb-2">
                                                 <input
                                                     type="number"
-                                                    placeholder="60"
-                                                    min="0"
+                                                    placeholder="Segundos"
+                                                    min="10"
                                                     max="600"
                                                     value="60"
-                                                    class="rest-duration w-16 h-6 text-xs rounded border border-border bg-background px-2 py-1 text-center"
+                                                    class="rest-duration w-20 h-8 rounded-md border border-border bg-background px-2 py-1 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                                                 />
+                                                <button class="start-timer inline-flex h-8 items-center justify-center rounded-md bg-primary px-3 text-xs font-medium text-primary-foreground transition-colors hover:bg-primary/90">
+                                                    <span class="timer-display">Iniciar Descanso</span>
+                                                </button>
                                             </div>
-                                            <button
-                                                type="button"
-                                                class="start-timer w-full h-8 bg-primary text-primary-foreground text-xs rounded-md hover:bg-primary/90 transition-colors"
-                                            >
-                                                <span class="timer-display">Iniciar Descanso</span>
-                                            </button>
-                                            <div class="timer-progress mt-2 hidden">
-                                                <div class="w-full bg-muted rounded-full h-2">
-                                                    <div class="timer-progress-bar bg-primary h-2 rounded-full transition-all duration-1000" style="width: 0%"></div>
-                                                </div>
-                                                <div class="timer-text text-center text-xs text-muted-foreground mt-1">60s</div>
+                                            <div class="timer-progress w-full bg-muted rounded-full h-2 mb-1">
+                                                <div class="timer-progress-bar bg-primary h-2 rounded-full transition-all duration-1000" style="width: 0%"></div>
                                             </div>
+                                            <div class="timer-text text-xs text-muted-foreground">Listo para descansar</div>
                                         </div>
                                     </div>
                                 </div>
@@ -182,33 +169,124 @@ import { Dumbbell, ArrowLeft, Save, Plus } from 'lucide-react';
 
     <!-- Form Logic -->
     <script>
-        // Exercise GIFs database
-        const exerciseGifs: { [key: string]: string } = {
-            'press banca': 'https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExbnJmZzFqaHZ6b3NqZ3FqamN2d2h2amN2c3hlcDlqY3ZidmN3b2U4aiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/l4FGkXcEC9K2t8yBi/giphy.gif',
-            'sentadilla': 'https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExbnJmZzFqaHZ6b3NqZ3FqamN2d2h2amN2c3hlcDlqY3ZidmN3b2U4aiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/l4FGkXcEC9K2t8yBi/giphy.gif',
-            'peso muerto': 'https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExbnJmZzFqaHZ6b3NqZ3FqamN2d2h2amN2c3hlcDlqY3ZidmN3b2U4aiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/l4FGkXcEC9K2t8yBi/giphy.gif',
-            'dominadas': 'https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExbnJmZzFqaHZ6b3NqZ3FqamN2d2h2amN2c3hlcDlqY3ZidmN3b2U4aiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/l4FGkXcEC9K2t8yBi/giphy.gif',
-            'remo': 'https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExbnJmZzFqaHZ6b3NqZ3FqamN2d2h2amN2c3hlcDlqY3ZidmN3b2U4aiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/l4FGkXcEC9K2t8yBi/giphy.gif',
-            'curl bíceps': 'https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExbnJmZzFqaHZ6b3NqZ3FqamN2d2h2amN2c3hlcDlqY3ZidmN3b2U4aiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/l4FGkXcEC9K2t8yBi/giphy.gif',
-            'fondos': 'https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExbnJmZzFqaHZ6b3NqZ3FqamN2d2h2amN2c3hlcDlqY3ZidmN3b2U4aiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/l4FGkXcEC9K2t8yBi/giphy.gif',
-            'prensa': 'https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExbnJmZzFqaHZ6b3NqZ3FqamN2d2h2amN2c3hlcDlqY3ZidmN3b2U4aiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/l4FGkXcEC9K2t8yBi/giphy.gif',
-            'hip thrust': 'https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExbnJmZzFqaHZ6b3NqZ3FqamN2d2h2amN2c3hlcDlqY3ZidmN3b2U4aiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/l4FGkXcEC9K2t8yBi/giphy.gif',
+        // Set today's date as default
+        document.addEventListener('DOMContentLoaded', function() {
+            const workoutDateInput = document.getElementById('workoutDate') as HTMLInputElement;
+            const today = new Date();
+            const year = today.getFullYear();
+            const month = String(today.getMonth() + 1).padStart(2, '0');
+            const day = String(today.getDate()).padStart(2, '0');
+            workoutDateInput.value = `${year}-${month}-${day}`;
+        });
+
+        // Exercise images database with REAL exercise photos
+        const exerciseImages: { [key: string]: string } = {
+            // Push Day - Chest Exercises
+            'press banca': 'https://images.unsplash.com/photo-1517963879778-e1d1a0a697a5?w=400&h=300&fit=crop',
+            'press inclinado': 'https://images.unsplash.com/photo-1581009146145-b5ef025c2f89?w=400&h=300&fit=crop',
+            'press declinado': 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop',
+            'fondos': 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=400&h=300&fit=crop',
+            'fondos en paralelas': 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=400&h=300&fit=crop',
+            'flexiones': 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop',
+            'aperturas': 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=400&h=300&fit=crop',
+            'aperturas mancuernas': 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=400&h=300&fit=crop',
+            'crucifijo máquina': 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=400&h=300&fit=crop',
+            
+            // Push Day - Shoulders Exercises
+            'press militar': 'https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?w=400&h=300&fit=crop',
+            'press arnold': 'https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?w=400&h=300&fit=crop',
+            'elevaciones laterales': 'https://images.unsplash.com/photo-1518611012118-696072aa579a?w=400&h=300&fit=crop',
+            'elevaciones frontales': 'https://images.unsplash.com/photo-1518611012118-696072aa579a?w=400&h=300&fit=crop',
+            'encogimientos': 'https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?w=400&h=300&fit=crop',
+            'encogimientos trapecio': 'https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?w=400&h=300&fit=crop',
+            'elevaciones proyección': 'https://images.unsplash.com/photo-1518611012118-696072aa579a?w=400&h=300&fit=crop',
+            
+            // Push Day - Triceps Exercises
+            'extensión tríceps': 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop',
+            'extensión tríceps polea': 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop',
+            'press francés': 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=400&h=300&fit=crop',
+            'dips tríceps': 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=400&h=300&fit=crop',
+            'tríceps cuerda': 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop',
+            'tríceps mancuernas': 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=400&h=300&fit=crop',
+            
+            // Pull Day - Back Exercises
+            'dominadas': 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop',
+            'jalón al pecho': 'https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?w=400&h=300&fit=crop',
+            'remo con barra': 'https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?w=400&h=300&fit=crop',
+            'remo máquina': 'https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?w=400&h=300&fit=crop',
+            'remo mancuernas': 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=400&h=300&fit=crop',
+            'palo músculo': 'https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?w=400&h=300&fit=crop',
+            'face pulls': 'https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?w=400&h=300&fit=crop',
+            
+            // Pull Day - Biceps Exercises
+            'curl bíceps': 'https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?w=400&h=300&fit=crop',
+            'curl bíceps barra': 'https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?w=400&h=300&fit=crop',
+            'curl bíceps mancuernas': 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=400&h=300&fit=crop',
+            'curl martillo': 'https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?w=400&h=300&fit=crop',
+            'curl concentrado': 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=400&h=300&fit=crop',
+            'curl inclinado': 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=400&h=300&fit=crop',
+            'curl polea': 'https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?w=400&h=300&fit=crop',
+            
+            // Leg Day - Squat Variations
+            'sentadilla': 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop',
+            'sentadilla trasera': 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop',
+            'sentadilla frontal': 'https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?w=400&h=300&fit=crop',
+            'sentadilla goblet': 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop',
+            'sentadilla búlgara': 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=400&h=300&fit=crop',
+            
+            // Leg Day - Other Leg Exercises
+            'prensa': 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop',
+            'prensa de piernas': 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop',
+            'zancadas': 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=400&h=300&fit=crop',
+            'peso muerto': 'https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?w=400&h=300&fit=crop',
+            'peso muerto rumano': 'https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?w=400&h=300&fit=crop',
+            'hip thrust': 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=400&h=300&fit=crop',
+            'curl femoral': 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop',
+            'extensión cuádriceps': 'https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?w=400&h=300&fit=crop',
+            'elevación gemelos': 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=400&h=300&fit=crop',
+            'gemelos en máquina': 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=400&h=300&fit=crop',
+            'abducción de cadera': 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=400&h=300&fit=crop',
+            'aducción de cadera': 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=400&h=300&fit=crop',
+            
+            // Core Exercises
+            'plancha': 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop',
+            'plancha frontal': 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop',
+            'plancha lateral': 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop',
+            'crunch': 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=400&h=300&fit=crop',
+            'crunch abdominal': 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=400&h=300&fit=crop',
+            'elevación de piernas': 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop',
+            'mountain climbers': 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=400&h=300&fit=crop',
+            'russian twists': 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=400&h=300&fit=crop',
+            'leg raises': 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop',
+            'hiperextensiones': 'https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?w=400&h=300&fit=crop',
+            'bird dog': 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop',
+            'dead bug': 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=400&h=300&fit=crop',
+            
+            // Cardio Exercises
+            'saltos la cuerda': 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=400&h=300&fit=crop',
+            'burpees': 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=400&h=300&fit=crop',
+            'jumping jacks': 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=400&h=300&fit=crop',
+            'mountain biker': 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=400&h=300&fit=crop',
+            'correr': 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=400&h=300&fit=crop',
+            'bicicleta estática': 'https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?w=400&h=300&fit=crop',
+            'elíptica': 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=400&h=300&fit=crop',
+            'remo estático': 'https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?w=400&h=300&fit=crop',
         };
 
-        // Routine suggestions
+        // Routine suggestions with emojis
         const routineSuggestions = [
-            'Push Day',
-            'Pull Day', 
-            'Leg Day',
-            'Full Body',
-            'Upper Body',
-            'Lower Body',
-            'Cardio + Fuerza',
-            'HIIT Training',
-            'PPL (Push/Pull/Legs)',
-            'Bro Split',
-            'Full Body 3x',
-            'Upper/Lower Split'
+            '💪 Push Day',
+            '🎯 Pull Day', 
+            '🦵 Leg Day',
+            '🏋️ Full Body',
+            '💪 Upper Body',
+            '🦵 Lower Body',
+            '🔥 Cardio + Fuerza',
+            '⚡ HIIT Training',
+            '📊 PPL (Push/Pull/Legs)',
+            '💎 Bro Split',
+            '🏋️ Full Body 3x',
+            '💪 Upper/Lower Split'
         ];
 
         // Exercise suggestions
@@ -491,24 +569,6 @@ import { Dumbbell, ArrowLeft, Save, Plus } from 'lucide-react';
             }, 1000);
         }
 
-        function updateExerciseGif(exerciseInput: HTMLInputElement, gifContainer: HTMLElement): void {
-            const exerciseName = exerciseInput.value.toLowerCase();
-            let gifUrl: string | null = null;
-            
-            // Find matching exercise
-            Object.keys(exerciseGifs).forEach((key: string) => {
-                if (exerciseName.includes(key) && exerciseGifs[key]) {
-                    gifUrl = exerciseGifs[key]!;
-                }
-            });
-
-            if (gifUrl) {
-                gifContainer.innerHTML = `<img src="${gifUrl}" alt="Exercise demo" class="w-full h-32 object-cover rounded-md" />`;
-            } else {
-                gifContainer.innerHTML = '<span class="text-xs text-muted-foreground">Escribe un ejercicio para ver la demo</span>';
-            }
-        }
-
         // Set today's date as default
         document.addEventListener('DOMContentLoaded', function() {
             const dateInput = document.getElementById('workoutDate') as HTMLInputElement;
@@ -607,7 +667,7 @@ import { Dumbbell, ArrowLeft, Save, Plus } from 'lucide-react';
                             createAutocomplete(newExerciseInput, exerciseSuggestions, 'exercise');
                             
                             newExerciseInput.addEventListener('input', () => {
-                                updateExerciseGif(newExerciseInput, newGifContainer);
+                                // Exercise demos removed
                             });
                         }
                         
@@ -626,10 +686,7 @@ import { Dumbbell, ArrowLeft, Save, Plus } from 'lucide-react';
             document.querySelectorAll('.exercise-name').forEach((input: Element) => {
                 const htmlInput = input as HTMLInputElement;
                 htmlInput.addEventListener('input', function(this: HTMLInputElement) {
-                    const gifContainer = this.closest('.rounded-lg')?.querySelector('.exercise-gif') as HTMLElement;
-                    if (gifContainer) {
-                        updateExerciseGif(this, gifContainer);
-                    }
+                    // Exercise demos removed
                 });
             });
             
