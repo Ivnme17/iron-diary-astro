@@ -89,11 +89,32 @@ cd iron-diary-astro
 ```
 
 ### 2. Configurar el Backend
+
+#### Opción A: Instalar dependencias y ejecutar
 ```bash
 cd backend
 pip install -r requirements.txt
 uvicorn main:app --reload --host 127.0.0.1 --port 8000
 ```
+
+#### Opción B: Si uvicorn no está reconocido (Windows)
+```bash
+cd backend
+pip install fastapi uvicorn[standard]
+python -m uvicorn main:app --reload --host 127.0.0.1 --port 8000
+```
+
+#### Opción C: Usar Python directamente (si uvicorn no está en PATH)
+```bash
+cd backend
+pip install -r requirements.txt
+python -m uvicorn main:app --reload --host 127.0.0.1 --port 8000
+```
+
+#### Solución de problemas comunes:
+- **Error: "uvicorn is not recognized"** → Usa `python -m uvicorn` en lugar de `uvicorn`
+- **Error: "No module named uvicorn"** → Ejecuta `pip install uvicorn[standard]`
+- **Error: "No module named fastapi"** → Ejecuta `pip install fastapi`
 
 ### 3. Configurar el Frontend
 ```bash
@@ -197,11 +218,27 @@ El backend está configurado para aceptar peticiones desde:
 
 ### Problemas Comunes
 
+**Error: "uvicorn is not recognized as the name of a cmdlet, function, script file, or operable program"**
+```bash
+# Solución 1: Usar python -m uvicorn
+cd backend
+python -m uvicorn main:app --reload --host 127.0.0.1 --port 8000
+
+# Solución 2: Reinstalar uvicorn con soporte estándar
+pip install uvicorn[standard]
+
+# Solución 3: Instalar dependencias manualmente
+pip install fastapi uvicorn[standard]
+python -m uvicorn main:app --reload --host 127.0.0.1 --port 8000
+```
+
 **Error de conexión con el backend**
 ```bash
 # Asegúrate que el backend esté corriendo
 cd backend
-uvicorn main:app --reload --host 127.0.0.1 --port 8000
+python -m uvicorn main:app --reload --host 127.0.0.1 --port 8000
+
+# Verifica que el servidor esté activo en http://localhost:8000
 ```
 
 **Autocompletado no funciona**
@@ -213,6 +250,15 @@ uvicorn main:app --reload --host 127.0.0.1 --port 8000
 - Algunos GIFs pueden tardar en cargar
 - Verifica la conexión a internet
 - Los GIFs son opcionales, el formulario funciona sin ellos
+
+**Problemas de instalación en Windows**
+```bash
+# Si pip no funciona, intenta con python -m pip
+python -m pip install -r requirements.txt
+
+# Si Python no está en PATH, usa la ruta completa
+C:\Python39\python.exe -m uvicorn main:app --reload --host 127.0.0.1 --port 8000
+```
 
 ## 📄 Licencia
 

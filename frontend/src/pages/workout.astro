@@ -127,6 +127,33 @@ import { Dumbbell, ArrowLeft, Save, Plus } from 'lucide-react';
                                                 <span class="text-xs text-muted-foreground">Escribe un ejercicio para ver la demo</span>
                                             </div>
                                         </div>
+                                        
+                                        <!-- Rest Timer -->
+                                        <div class="rest-timer-container bg-muted/30 rounded-lg p-3">
+                                            <div class="flex items-center justify-between mb-2">
+                                                <label class="text-xs text-muted-foreground">Descanso (segundos)</label>
+                                                <input
+                                                    type="number"
+                                                    placeholder="60"
+                                                    min="0"
+                                                    max="600"
+                                                    value="60"
+                                                    class="rest-duration w-16 h-6 text-xs rounded border border-border bg-background px-2 py-1 text-center"
+                                                />
+                                            </div>
+                                            <button
+                                                type="button"
+                                                class="start-timer w-full h-8 bg-primary text-primary-foreground text-xs rounded-md hover:bg-primary/90 transition-colors"
+                                            >
+                                                <span class="timer-display">Iniciar Descanso</span>
+                                            </button>
+                                            <div class="timer-progress mt-2 hidden">
+                                                <div class="w-full bg-muted rounded-full h-2">
+                                                    <div class="timer-progress-bar bg-primary h-2 rounded-full transition-all duration-1000" style="width: 0%"></div>
+                                                </div>
+                                                <div class="timer-text text-center text-xs text-muted-foreground mt-1">60s</div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -358,6 +385,112 @@ import { Dumbbell, ArrowLeft, Save, Plus } from 'lucide-react';
             });
         };
 
+        // Timer functionality
+        function playAlarmSound(): void {
+            // Create alarm sound using Web Audio API
+            const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            // Create a beep sound
+            oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+            oscillator.frequency.setValueAtTime(600, audioContext.currentTime + 0.1);
+            oscillator.frequency.setValueAtTime(800, audioContext.currentTime + 0.2);
+            
+            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.5);
+            
+            // Play multiple beeps
+            setTimeout(() => {
+                const osc2 = audioContext.createOscillator();
+                const gain2 = audioContext.createGain();
+                osc2.connect(gain2);
+                gain2.connect(audioContext.destination);
+                
+                osc2.frequency.setValueAtTime(800, audioContext.currentTime);
+                gain2.gain.setValueAtTime(0.3, audioContext.currentTime);
+                gain2.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+                
+                osc2.start(audioContext.currentTime);
+                osc2.stop(audioContext.currentTime + 0.5);
+            }, 600);
+            
+            setTimeout(() => {
+                const osc3 = audioContext.createOscillator();
+                const gain3 = audioContext.createGain();
+                osc3.connect(gain3);
+                gain3.connect(audioContext.destination);
+                
+                osc3.frequency.setValueAtTime(800, audioContext.currentTime);
+                gain3.gain.setValueAtTime(0.3, audioContext.currentTime);
+                gain3.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+                
+                osc3.start(audioContext.currentTime);
+                osc3.stop(audioContext.currentTime + 0.5);
+            }, 1200);
+        }
+
+        function startTimer(button: HTMLButtonElement): void {
+            const container = button.closest('.rest-timer-container');
+            if (!container) return;
+            
+            const durationInput = container.querySelector('.rest-duration') as HTMLInputElement;
+            const display = button.querySelector('.timer-display') as HTMLElement;
+            const progressContainer = container.querySelector('.timer-progress') as HTMLElement;
+            const progressBar = container.querySelector('.timer-progress-bar') as HTMLElement;
+            const timerText = container.querySelector('.timer-text') as HTMLElement;
+            
+            const duration = parseInt(durationInput?.value || '60');
+            let timeLeft = duration;
+            
+            // Disable button and show progress
+            button.disabled = true;
+            display.textContent = `${timeLeft}s`;
+            progressContainer.classList.remove('hidden');
+            
+            const interval = setInterval(() => {
+                timeLeft--;
+                display.textContent = `${timeLeft}s`;
+                timerText.textContent = `${timeLeft}s`;
+                
+                // Update progress bar
+                const progress = ((duration - timeLeft) / duration) * 100;
+                progressBar.style.width = `${progress}%`;
+                
+                // Change color when time is running out
+                if (timeLeft <= 10) {
+                    progressBar.classList.remove('bg-primary');
+                    progressBar.classList.add('bg-destructive');
+                }
+                
+                if (timeLeft <= 0) {
+                    clearInterval(interval);
+                    
+                    // Play alarm sound
+                    playAlarmSound();
+                    
+                    // Reset button
+                    button.disabled = false;
+                    display.textContent = 'Iniciar Descanso';
+                    progressBar.style.width = '0%';
+                    progressBar.classList.remove('bg-destructive');
+                    progressBar.classList.add('bg-primary');
+                    
+                    // Show completion message
+                    display.textContent = '¡Descanso Completado!';
+                    setTimeout(() => {
+                        display.textContent = 'Iniciar Descanso';
+                    }, 3000);
+                }
+            }, 1000);
+        }
+
         function updateExerciseGif(exerciseInput: HTMLInputElement, gifContainer: HTMLElement): void {
             const exerciseName = exerciseInput.value.toLowerCase();
             let gifUrl: string | null = null;
@@ -477,6 +610,14 @@ import { Dumbbell, ArrowLeft, Save, Plus } from 'lucide-react';
                                 updateExerciseGif(newExerciseInput, newGifContainer);
                             });
                         }
+                        
+                        // Add timer button event listener
+                        const timerButton = exerciseDiv.querySelector('.start-timer') as HTMLButtonElement;
+                        if (timerButton) {
+                            timerButton.addEventListener('click', () => {
+                                startTimer(timerButton);
+                            });
+                        }
                     }
                 });
             }
@@ -489,6 +630,14 @@ import { Dumbbell, ArrowLeft, Save, Plus } from 'lucide-react';
                     if (gifContainer) {
                         updateExerciseGif(this, gifContainer);
                     }
+                });
+            });
+            
+            // Add event listeners to existing timer buttons
+            document.querySelectorAll('.start-timer').forEach((button: Element) => {
+                const htmlButton = button as HTMLButtonElement;
+                htmlButton.addEventListener('click', () => {
+                    startTimer(htmlButton);
                 });
             });
 
