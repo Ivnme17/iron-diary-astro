@@ -1,0 +1,97 @@
+---
+import '../styles/global.css';
+import { Dumbbell } from 'lucide-react';
+---
+
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>Correo Confirmado - Iron Diary</title>
+</head>
+<body class="bg-background text-foreground min-h-screen flex items-center justify-center">
+    <div class="w-full max-w-md mx-auto p-4">
+        <!-- Logo y título -->
+        <div class="text-center mb-8">
+            <div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-primary shadow-lg">
+                <Dumbbell className="h-8 w-8 text-primary-foreground" />
+            </div>
+            <h1 class="text-3xl font-bold text-foreground">Iron Diary</h1>
+        </div>
+
+        <!-- Contenido de confirmación -->
+        <div class="rounded-lg border bg-card text-card-foreground shadow-sm p-8 text-center">
+            <!-- Icono de éxito -->
+            <div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-green-100">
+                <svg class="h-8 w-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+            </div>
+            
+            <h2 class="text-2xl font-semibold text-foreground mb-4">¡Correo Confirmado!</h2>
+            
+            <p class="text-muted-foreground mb-6">
+                Tu cuenta ha sido verificada exitosamente. Ahora puedes iniciar sesión y comenzar tu viaje fitness con Iron Diary.
+            </p>
+            
+            <div class="space-y-3">
+                <a href="/login" class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 w-full">
+                    Iniciar Sesión
+                </a>
+            </div>
+            
+            <!-- Contador regresivo -->
+            <div class="mt-6 text-sm text-muted-foreground">
+                <p>Redirigiendo al login en <span id="countdown">20</span> segundos...</p>
+                <div class="w-full bg-secondary rounded-full h-2 mt-2">
+                    <div id="progress" class="bg-primary h-2 rounded-full transition-all duration-1000" style="width: 100%"></div>
+                </div>
+            </div>
+            
+            <!-- Opción directa al dashboard -->
+            <div class="mt-4 text-sm text-muted-foreground">
+                <p>¿Ya tienes sesión? <a href="/dashboard-user" class="text-primary hover:underline">Ir al dashboard</a></p>
+            </div>
+        </div>
+
+        <!-- Información adicional -->
+        <div class="mt-6 text-center text-sm text-muted-foreground">
+            <p>¿No redirige automáticamente? <a href="/login" class="text-primary hover:underline">Haz clic aquí</a></p>
+        </div>
+    </div>
+
+    <script>
+        let countdown = 20;
+        const countdownEl = document.getElementById('countdown');
+        const progressEl = document.getElementById('progress');
+        
+        const interval = setInterval(() => {
+            countdown--;
+            if (countdownEl) {
+                countdownEl.textContent = countdown.toString();
+            }
+            
+            // Actualizar barra de progreso
+            const progress = (countdown / 20) * 100;
+            if (progressEl) {
+                progressEl.style.width = progress + '%';
+            }
+            
+            if (countdown <= 0) {
+                clearInterval(interval);
+                window.location.href = '/login';
+            }
+        }, 1000);
+        
+        // Redirigir inmediatamente si el usuario hace clic en "Iniciar Sesión"
+        const loginLink = document.querySelector('a[href="/login"]');
+        if (loginLink) {
+            loginLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                clearInterval(interval);
+                window.location.href = '/login';
+            });
+        }
+    </script>
+</body>
+</html>

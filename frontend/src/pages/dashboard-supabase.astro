@@ -1,0 +1,138 @@
+---
+import '../styles/global.css';
+import DemoBanner from '../components/DemoBanner.astro';
+import WorkoutCard from '../components/WorkoutCard.tsx';
+import { Dumbbell, Plus } from 'lucide-react';
+import { supabaseApi, type Workout, type Stats } from '../lib/supabase';
+
+let workouts: Workout[] = [];
+let stats: Stats = { total_workouts: 0, total_exercises: 0, total_kg: 0 };
+let fetchError = false;
+
+try {
+  // Fetch desde Supabase
+  const [workoutsData, statsData] = await Promise.all([
+    supabaseApi.getWorkouts(),
+    supabaseApi.getStats()
+  ]);
+  
+  workouts = workoutsData;
+  stats = statsData;
+} catch (e) {
+  console.error("Error fetching from Supabase:", e);
+  fetchError = true;
+}
+---
+
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>Dashboard - Iron Diary (Supabase)</title>
+</head>
+<body class="bg-background text-foreground min-h-screen">
+    <DemoBanner />
+    
+    <header class="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div class="container mx-auto flex h-14 max-w-screen-2xl items-center">
+            <div class="mr-4 hidden md:flex">
+                <a class="mr-6 flex items-center space-x-2" href="/">
+                    <Dumbbell className="h-6 w-6" />
+                    <span class="hidden font-bold sm:inline-block">Iron Diary</span>
+                </a>
+                <nav class="flex items-center space-x-6 text-sm font-medium">
+                    <a href="/dashboard" class="transition-colors hover:text-foreground/80 text-foreground">Dashboard</a>
+                    <a href="/workout" class="transition-colors hover:text-foreground/80 text-foreground/60">Entrenamiento</a>
+                    <a href="/ironTV" class="transition-colors hover:text-foreground/80 text-foreground/60">IronTV</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main class="container mx-auto max-w-screen-2xl px-4 py-8">
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold tracking-tight">Dashboard</h1>
+            <p class="text-muted-foreground">Resumen de tu progreso de entrenamiento</p>
+        </div>
+
+        {fetchError ? (
+            <div class="rounded-lg border border-red-200 bg-red-50 p-4 text-red-800">
+                <h2 class="font-semibold">Error de conexión</h2>
+                <p>No se pudieron cargar los datos desde Supabase. Verifica tu conexión.</p>
+            </div>
+        ) : (
+            <>
+                <!-- Stats Cards -->
+                <div class="grid gap-4 md:grid-cols-3 mb-8">
+                    <div class="rounded-lg border bg-card text-card-foreground shadow-sm">
+                        <div class="p-6 flex flex-row items-center justify-between space-y-0 pb-2">
+                            <h3 class="tracking-tight text-sm font-medium">Entrenamientos Totales</h3>
+                            <Dumbbell className="h-4 w-4 text-muted-foreground" />
+                        </div>
+                        <div class="text-2xl font-bold">{stats.total_workouts}</div>
+                        <p class="text-xs text-muted-foreground">Sesiones completadas</p>
+                    </div>
+                    
+                    <div class="rounded-lg border bg-card text-card-foreground shadow-sm">
+                        <div class="p-6 flex flex-row items-center justify-between space-y-0 pb-2">
+                            <h3 class="tracking-tight text-sm font-medium">Ejercicios Totales</h3>
+                            <Plus className="h-4 w-4 text-muted-foreground" />
+                        </div>
+                        <div class="text-2xl font-bold">{stats.total_exercises}</div>
+                        <p class="text-xs text-muted-foreground">Ejercicios realizados</p>
+                    </div>
+                    
+                    <div class="rounded-lg border bg-card text-card-foreground shadow-sm">
+                        <div class="p-6 flex flex-row items-center justify-between space-y-0 pb-2">
+                            <h3 class="tracking-tight text-sm font-medium">Peso Total Levantado</h3>
+                            <span class="text-lg font-bold">🏋️</span>
+                        </div>
+                        <div class="text-2xl font-bold">{stats.total_kg.toLocaleString()} kg</div>
+                        <p class="text-xs text-muted-foreground">Toneladas movidas</p>
+                    </div>
+                </div>
+
+                <!-- Recent Workouts -->
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-2xl font-semibold tracking-tight">Entrenamientos Recientes</h2>
+                    <a href="/workout" class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-4 py-2">
+                        <Plus className="h-4 w-4 mr-2" />
+                        Nuevo Entrenamiento
+                    </a>
+                </div>
+
+                {workouts.length === 0 ? (
+                    <div class="flex flex-col items-center justify-center rounded-lg border border-dashed border-gray-300 p-8 text-center">
+                        <Dumbbell className="h-12 w-12 text-gray-400 mb-4" />
+                        <h3 class="text-lg font-semibold text-gray-900 mb-2">No hay entrenamientos</h3>
+                        <p class="text-gray-600 mb-4">Comienza registrando tu primer entrenamiento</p>
+                        <a href="/workout" class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-4 py-2">
+                            <Plus className="h-4 w-4 mr-2" />
+                            Crear Entrenamiento
+                        </a>
+                    </div>
+                ) : (
+                    <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                        {workouts.map((workout) => (
+                            <WorkoutCard 
+                                key={workout.id} 
+                                workout={workout} 
+                                onDelete={async (id) => {
+                                    try {
+                                        await supabaseApi.deleteWorkout(id);
+                                        // Recargar la página para actualizar los datos
+                                        location.reload();
+                                    } catch (error) {
+                                        console.error('Error deleting workout:', error);
+                                        alert('Error al eliminar el entrenamiento');
+                                    }
+                                }}
+                            />
+                        ))}
+                    </div>
+                )}
+            </>
+        )}
+    </main>
+</body>
+</html>

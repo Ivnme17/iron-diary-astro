@@ -1,0 +1,94 @@
+---
+import '../styles/global.css';
+import DemoBanner from '../components/DemoBanner.astro';
+import { Dumbbell } from 'lucide-react';
+
+interface Props {
+  title: string;
+}
+
+const { title } = Astro.props;
+---
+
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>{title} - Iron Diary</title>
+</head>
+<body class="bg-background text-foreground min-h-screen">
+    <DemoBanner />
+    
+    <header class="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div class="container mx-auto flex h-14 max-w-screen-2xl items-center justify-between">
+            <div class="mr-4 hidden md:flex">
+                <a class="mr-6 flex items-center space-x-2" href="/dashboard-supabase">
+                    <Dumbbell className="h-6 w-6" />
+                    <span class="hidden font-bold sm:inline-block">Iron Diary</span>
+                </a>
+                <nav class="flex items-center space-x-6 text-sm font-medium">
+                    <a href="/dashboard-supabase" class="transition-colors hover:text-foreground/80 text-foreground">Dashboard</a>
+                    <a href="/workout" class="transition-colors hover:text-foreground/80 text-foreground/60">Entrenamiento</a>
+                    <a href="/ironTV" class="transition-colors hover:text-foreground/80 text-foreground/60">IronTV</a>
+                </nav>
+            </div>
+            
+            <!-- User menu -->
+            <div class="flex items-center space-x-4">
+                <span id="userEmail" class="text-sm text-muted-foreground">Cargando...</span>
+                <button id="logoutBtn" class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-8 px-3">
+                    Cerrar sesión
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="container mx-auto max-w-screen-2xl px-4 py-8">
+        <slot />
+    </main>
+
+    <script type="module">
+        import { authApi } from '/supabase-client.js';
+
+        // Verificar autenticación
+        async function checkAuth() {
+            try {
+                const user = await authApi.getCurrentUser();
+                if (!user) {
+                    window.location.href = '/login';
+                    return;
+                }
+                
+                // Mostrar email del usuario
+                const userEmailEl = document.getElementById('userEmail');
+                if (userEmailEl) {
+                    userEmailEl.textContent = user.email;
+                }
+            } catch (error) {
+                console.error('Error checking auth:', error);
+                window.location.href = '/login';
+            }
+        }
+
+        // Cerrar sesión
+        document.getElementById('logoutBtn')?.addEventListener('click', async () => {
+            try {
+                await authApi.signOut();
+                window.location.href = '/login';
+            } catch (error) {
+                console.error('Error signing out:', error);
+            }
+        });
+
+        // Verificar autenticación al cargar la página
+        checkAuth();
+
+        // Escuchar cambios de autenticación
+        authApi.onAuthStateChange((event, session) => {
+            if (event === 'SIGNED_OUT' || !session) {
+                window.location.href = '/login';
+            }
+        });
+    </script>
+</body>
+</html>

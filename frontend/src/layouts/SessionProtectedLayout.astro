@@ -1,0 +1,68 @@
+---
+import '../styles/global.css';
+import DemoBanner from '../components/DemoBanner.astro';
+import { Dumbbell } from 'lucide-react';
+
+interface Props {
+    title: string;
+}
+
+const { title } = Astro.props;
+---
+
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>{title} - Iron Diary</title>
+</head>
+<body class="bg-background text-foreground min-h-screen">
+    <DemoBanner />
+    
+    <header class="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div class="container mx-auto flex h-14 max-w-screen-2xl items-center justify-between">
+            <div class="mr-4 hidden md:flex">
+                <a class="mr-6 flex items-center space-x-2" href="/dashboard-user" data-dashboard>
+                    <Dumbbell className="h-6 w-6" />
+                    <span class="hidden font-bold sm:inline-block">Iron Diary</span>
+                </a>
+                <nav class="flex items-center space-x-6 text-sm font-medium">
+                    <a href="/dashboard-user" class="transition-colors hover:text-foreground/80 text-foreground">Dashboard</a>
+                    <a href="/workout" class="transition-colors hover:text-foreground/80 text-foreground/60">Entrenamiento</a>
+                    <a href="/ironTV" class="transition-colors hover:text-foreground/80 text-foreground/60">IronTV</a>
+                </nav>
+            </div>
+            
+            <!-- User menu -->
+            <div class="flex items-center space-x-4">
+                <div data-user-info class="flex items-center space-x-2 cursor-pointer hover:bg-accent hover:text-accent-foreground rounded-lg px-3 py-2 transition-colors">
+                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                    </svg>
+                    <span class="text-sm font-medium">Usuario</span>
+                </div>
+                <button data-logout class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-8 px-3">
+                    <svg class="h-4 w-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                    </svg>
+                    Cerrar sesión
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="container mx-auto max-w-screen-2xl px-4 py-8">
+        <slot />
+    </main>
+
+    <script type="module">
+        import sessionManager from '/session-manager.js';
+
+        // Inicializar gestor de sesiones
+        document.addEventListener('DOMContentLoaded', async () => {
+            await sessionManager.init();
+            sessionManager.setupUserElements();
+        });
+    </script>
+</body>
+</html>
