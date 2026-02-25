@@ -13,8 +13,6 @@
       --fd:'Bebas Neue',sans-serif;--fb:'DM Sans',sans-serif;
     }
     body{background:var(--bg);color:var(--text);font-family:var(--fb);min-height:100vh;overflow-x:hidden}
-
-    /* HEADER */
     .header{position:sticky;top:0;z-index:100;background:rgba(9,9,9,.95);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);height:58px;display:flex;align-items:center;justify-content:space-between;padding:0 20px}
     .logo{display:flex;align-items:center;gap:8px}
     .logo-mark{width:30px;height:30px;background:var(--accent);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:14px}
@@ -22,18 +20,12 @@
     .beta{font-size:9px;font-weight:700;letter-spacing:1.5px;color:var(--accent);border:1px solid var(--accent);padding:2px 5px;border-radius:3px;margin-top:6px}
     .add-btn{background:var(--accent);color:#fff;border:none;border-radius:8px;padding:8px 16px;font-family:var(--fb);font-weight:700;font-size:13px;cursor:pointer;transition:background .2s,transform .1s}
     .add-btn:hover{background:#d93000;transform:scale(1.04)}
-
-    /* CATS */
     .cats{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding:14px 20px;border-bottom:1px solid var(--border)}
     .cats::-webkit-scrollbar{display:none}
     .pill{flex-shrink:0;padding:6px 16px;border-radius:999px;font-size:13px;font-weight:500;cursor:pointer;border:1px solid var(--border);background:var(--surface);color:var(--muted);transition:all .2s}
     .pill:hover{border-color:#333;color:var(--text)}
     .pill.on{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:700}
-
-    /* LAYOUT */
     .layout{display:grid;grid-template-columns:1fr 340px;gap:20px;max-width:1300px;margin:0 auto;padding:20px}
-
-    /* PLAYER */
     .player-wrap{position:sticky;top:78px;height:calc(100vh - 100px);max-height:760px}
     .player-card{position:relative;height:100%;border-radius:18px;overflow:hidden;background:#000;border:1px solid var(--border)}
     #mainIframe{width:100%;height:100%;border:none;display:none}
@@ -46,19 +38,15 @@
     .video-title{font-family:var(--fd);font-size:26px;letter-spacing:1px;line-height:1.1;margin-bottom:6px;text-shadow:0 2px 8px rgba(0,0,0,.8)}
     .video-author{font-size:13px;color:rgba(255,255,255,.6);display:flex;align-items:center;gap:6px}
     .author-dot{width:18px;height:18px;border-radius:50%;background:var(--accent);flex-shrink:0}
-
     .actions{position:absolute;right:12px;bottom:86px;display:flex;flex-direction:column;gap:16px;align-items:center;z-index:10}
     .act{display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;background:none;border:none;color:#fff}
     .act-icon{width:42px;height:42px;border-radius:50%;background:rgba(255,255,255,.12);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;font-size:18px;transition:background .2s,transform .15s}
     .act:hover .act-icon{background:rgba(255,60,0,.35);transform:scale(1.1)}
     .act.liked .act-icon{background:rgba(255,60,0,.65)}
     .act-label{font-size:10px;font-weight:700;color:rgba(255,255,255,.7)}
-
-    /* FEED */
     .feed-head{font-family:var(--fd);font-size:20px;letter-spacing:1px;margin-bottom:10px}
     .feed-count{font-size:12px;color:var(--muted);margin-bottom:14px}
     .feed{display:flex;flex-direction:column;gap:10px}
-
     .reel{display:grid;grid-template-columns:94px 1fr;gap:10px;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:10px;cursor:pointer;transition:border-color .2s,transform .2s;position:relative;overflow:hidden}
     .reel::after{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--accent);opacity:0;transition:opacity .2s}
     .reel:hover{transform:translateX(3px);border-color:#2a2a2a}
@@ -75,11 +63,8 @@
     .dur-tag{background:rgba(255,60,0,.15);color:var(--accent);padding:1px 5px;border-radius:3px;font-size:9px;font-weight:700}
     .del-btn{margin-left:auto;background:none;border:none;color:#333;cursor:pointer;font-size:14px;padding:2px;transition:color .2s}
     .del-btn:hover{color:#ff3c00}
-
     .empty{text-align:center;padding:50px 20px;color:var(--muted)}
     .empty-ico{font-size:44px;margin-bottom:10px}
-
-    /* MODAL */
     .modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:200;align-items:center;justify-content:center;backdrop-filter:blur(10px)}
     .modal-bg.open{display:flex}
     .modal{background:var(--card);border:1px solid #252525;border-radius:18px;padding:28px;width:480px;max-width:94vw}
@@ -90,33 +75,18 @@
     .fg input,.fg select{width:100%;background:#111;border:1px solid var(--border);border-radius:9px;padding:11px 13px;color:var(--text);font-family:var(--fb);font-size:14px;outline:none;transition:border-color .2s}
     .fg input:focus,.fg select:focus{border-color:var(--accent)}
     .fg select option{background:#111}
-
-    /* Preview box */
     .preview-box{display:none;margin-bottom:14px;border-radius:12px;overflow:hidden;border:1px solid var(--border);background:#000;aspect-ratio:16/9;position:relative}
     .preview-box.show{display:block}
     .preview-box iframe{width:100%;height:100%;border:none}
     .preview-box .prev-spinner{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--muted)}
-
     .modal-btns{display:flex;gap:8px;margin-top:20px}
     .btn-cancel{flex:1;padding:11px;border-radius:9px;border:1px solid var(--border);background:none;color:var(--muted);font-family:var(--fb);font-size:14px;cursor:pointer;transition:border-color .2s}
     .btn-cancel:hover{border-color:#333;color:var(--text)}
     .btn-add{flex:2;padding:11px;border-radius:9px;border:none;background:var(--accent);color:#fff;font-family:var(--fb);font-size:14px;font-weight:700;cursor:pointer;transition:background .2s}
     .btn-add:hover{background:#d93000}
     .btn-add:disabled{background:#333;cursor:not-allowed}
-
-    /* Loading */
-    .spinner{display:inline-block;width:18px;height:18px;border:2px solid #333;border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle}
-    @keyframes spin{to{transform:rotate(360deg)}}
-
     .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:#1c1c1c;border:1px solid #333;border-radius:10px;padding:10px 20px;font-size:13px;font-weight:600;opacity:0;transition:opacity .3s,transform .3s;z-index:300;pointer-events:none;white-space:nowrap}
     .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-
-    /* API config banner */
-    .api-banner{background:#1a0f00;border-bottom:1px solid #3a2000;padding:10px 20px;font-size:12px;color:#ff8c00;display:flex;align-items:center;gap:10px}
-    .api-banner input{background:#111;border:1px solid #3a2000;border-radius:6px;padding:4px 10px;color:#fff;font-size:12px;outline:none;width:220px;font-family:var(--fb)}
-    .api-banner input:focus{border-color:var(--accent)}
-    .api-banner button{background:#ff8c00;color:#000;border:none;border-radius:6px;padding:4px 12px;font-size:12px;font-weight:700;cursor:pointer}
-
     @media(max-width:860px){
       .layout{grid-template-columns:1fr;padding:12px}
       .player-wrap{position:relative;top:0;height:72vw;max-height:480px}
@@ -124,14 +94,6 @@
   </style>
 </head>
 <body>
-
-<!-- API CONFIG BANNER -->
-<div class="api-banner" id="apiBanner">
-  ⚙️ URL de tu API FastAPI:
-  <input id="apiUrl" type="text" value="http://localhost:8000" placeholder="http://localhost:8000" onchange="saveApiUrl()" />
-  <button onclick="loadVideos()">Conectar</button>
-  <span id="apiStatus"></span>
-</div>
 
 <header class="header">
   <div class="logo">
@@ -152,7 +114,6 @@
 </div>
 
 <div class="layout">
-  <!-- PLAYER -->
   <div class="player-wrap">
     <div class="player-card">
       <div class="player-placeholder" id="placeholder">
@@ -179,31 +140,25 @@
     </div>
   </div>
 
-  <!-- FEED -->
   <div>
     <div class="feed-head">En ironTV</div>
     <div class="feed-count" id="feedCount"></div>
-    <div class="feed" id="feed"><div class="empty"><div class="empty-ico"><div class="spinner"></div></div><p>Cargando videos...</p></div></div>
+    <div class="feed" id="feed"></div>
   </div>
 </div>
 
-<!-- MODAL -->
 <div class="modal-bg" id="modalBg" onclick="bgClick(event)">
   <div class="modal">
     <h2>Agregar Video</h2>
     <p>Pega el link de YouTube y rellena los datos</p>
-
     <div class="fg">
       <label>URL de YouTube</label>
       <input id="urlIn" type="text" placeholder="https://youtube.com/watch?v=..." oninput="onUrlChange()" />
     </div>
-
-    <!-- PREVIEW -->
     <div class="preview-box" id="previewBox">
       <div class="prev-spinner" id="prevSpinner">Cargando preview...</div>
       <iframe id="previewIframe" allowfullscreen allow="autoplay; encrypted-media" style="display:none"></iframe>
     </div>
-
     <div class="fg">
       <label>Título</label>
       <input id="titleIn" type="text" placeholder="Ej: Full Body HIIT 20 min" />
@@ -236,6 +191,7 @@
 <div class="toast" id="toast"></div>
 
 <script>
+const STORAGE_KEY = 'irontv_videos';
 const catLabels = {fuerza:'💪 FUERZA',cardio:'🔥 CARDIO',hiit:'⚡ HIIT',movilidad:'🧘 MOVILIDAD',nutricion:'🥗 NUTRICIÓN'};
 
 let videos = [];
@@ -243,66 +199,56 @@ let activeId = null;
 let currentCat = 'all';
 let likedIds = new Set(JSON.parse(localStorage.getItem('irontv_liked') || '[]'));
 let previewTimer = null;
+let nextId = 1;
 
-// ── API URL ──────────────────────────────────────────────────────────────
-function getApi() {
-  return (localStorage.getItem('irontv_api') || 'http://localhost:8000').replace(/\/$/, '');
+function saveVideos() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(videos));
+  localStorage.setItem('irontv_nextid', nextId);
 }
-function saveApiUrl() {
-  const val = document.getElementById('apiUrl').value.trim();
-  localStorage.setItem('irontv_api', val);
-}
-document.getElementById('apiUrl').value = getApi();
 
-// ── LOAD VIDEOS ──────────────────────────────────────────────────────────
-async function loadVideos() {
-  const status = document.getElementById('apiStatus');
-  status.innerHTML = '<span class="spinner"></span>';
+function loadVideos() {
   try {
-    const cat = currentCat === 'all' ? '' : `?category=${currentCat}`;
-    const res = await fetch(`${getApi()}/api/videos${cat}`);
-    if (!res.ok) throw new Error('Error ' + res.status);
-    videos = await res.json();
-    status.textContent = '✓ Conectado';
-    status.style.color = '#4caf50';
-    renderFeed();
-    if (videos.length && activeId === null) selectVideo(videos[0].id);
-  } catch(e) {
-    status.textContent = '✗ Sin conexión';
-    status.style.color = '#ff3c00';
-    renderFeedOffline();
-  }
+    const stored = localStorage.getItem(STORAGE_KEY);
+    const storedId = localStorage.getItem('irontv_nextid');
+    videos = stored ? JSON.parse(stored) : [];
+    nextId = storedId ? parseInt(storedId) : 1;
+    if (videos.length > 0 && nextId <= Math.max(...videos.map(v => v.id))) {
+      nextId = Math.max(...videos.map(v => v.id)) + 1;
+    }
+  } catch(e) { videos = []; }
+  renderFeed();
+  const filtered = getFiltered();
+  if (filtered.length && activeId === null) selectVideo(filtered[0].id);
 }
 
-function renderFeedOffline() {
-  document.getElementById('feedCount').textContent = '';
-  document.getElementById('feed').innerHTML = `
-    <div class="empty">
-      <div class="empty-ico">⚡</div>
-      <p>No se pudo conectar a la API.<br>Ajusta la URL arriba e intenta de nuevo.</p>
-    </div>`;
+function getFiltered() {
+  return currentCat === 'all' ? videos : videos.filter(v => v.category === currentCat);
 }
 
-// ── RENDER FEED ───────────────────────────────────────────────────────────
+function escapeHtml(str) {
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
 function renderFeed() {
-  document.getElementById('feedCount').textContent = `${videos.length} video${videos.length !== 1 ? 's' : ''}`;
+  const filtered = getFiltered();
+  document.getElementById('feedCount').textContent = `${filtered.length} video${filtered.length !== 1 ? 's' : ''}`;
   const feed = document.getElementById('feed');
-  if (!videos.length) {
+  if (!filtered.length) {
     feed.innerHTML = '<div class="empty"><div class="empty-ico">📺</div><p>No hay videos aquí.<br>¡Agrega el primero!</p></div>';
     return;
   }
-  feed.innerHTML = videos.map(v => `
+  feed.innerHTML = filtered.map(v => `
     <div class="reel ${v.id === activeId ? 'active' : ''}" onclick="selectVideo(${v.id})">
       <div class="reel-thumb">
-        <img src="${v.thumb}" alt="${v.title}" loading="lazy" />
+        <img src="https://img.youtube.com/vi/${v.yt_id}/mqdefault.jpg" alt="${escapeHtml(v.title)}" loading="lazy" />
         <div class="reel-thumb-play">▶</div>
       </div>
       <div class="reel-info">
         <div class="reel-cat">${catLabels[v.category] || v.category}</div>
-        <div class="reel-title">${v.title}</div>
+        <div class="reel-title">${escapeHtml(v.title)}</div>
         <div class="reel-meta">
-          <span>${v.author}</span>
-          ${v.duration ? `<span class="dur-tag">${v.duration}</span>` : ''}
+          <span>${escapeHtml(v.author)}</span>
+          ${v.duration ? `<span class="dur-tag">${escapeHtml(v.duration)}</span>` : ''}
           <span>🔥 ${v.likes}</span>
           <button class="del-btn" onclick="deleteVideo(event,${v.id})" title="Eliminar">✕</button>
         </div>
@@ -311,102 +257,91 @@ function renderFeed() {
   `).join('');
 }
 
-// ── SELECT VIDEO ──────────────────────────────────────────────────────────
 function selectVideo(id) {
   const v = videos.find(x => x.id === id);
   if (!v) return;
   activeId = id;
-
   const iframe = document.getElementById('mainIframe');
   iframe.src = `https://www.youtube.com/embed/${v.yt_id}?autoplay=1&rel=0`;
   iframe.style.display = 'block';
   document.getElementById('placeholder').style.display = 'none';
   document.getElementById('videoMeta').style.display = 'block';
   document.getElementById('videoActions').style.display = 'flex';
-
   document.getElementById('vCat').textContent = catLabels[v.category] || v.category;
   document.getElementById('vTitle').textContent = v.title;
   document.getElementById('vAuthor').textContent = v.author;
   document.getElementById('likeNum').textContent = v.likes;
-
   const likeBtn = document.getElementById('likeAct');
   likedIds.has(id) ? likeBtn.classList.add('liked') : likeBtn.classList.remove('liked');
-
   renderFeed();
   window.scrollTo({top:0, behavior:'smooth'});
 }
 
 function handleNext() {
-  if (!videos.length) return;
-  const idx = videos.findIndex(x => x.id === activeId);
-  selectVideo(videos[(idx + 1) % videos.length].id);
+  const filtered = getFiltered();
+  if (!filtered.length) return;
+  const idx = filtered.findIndex(x => x.id === activeId);
+  selectVideo(filtered[(idx + 1) % filtered.length].id);
 }
 
-// ── LIKE ──────────────────────────────────────────────────────────────────
-async function handleLike() {
+function handleLike() {
   if (activeId === null) return;
-  const btn = document.getElementById('likeAct');
+  const v = videos.find(x => x.id === activeId);
+  if (!v) return;
   const isLiked = likedIds.has(activeId);
-  const delta = isLiked ? -1 : 1;
-
-  try {
-    const res = await fetch(`${getApi()}/api/videos/${activeId}/like`, {
-      method: 'PATCH',
-      headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({delta})
-    });
-    const updated = await res.json();
-    const v = videos.find(x => x.id === activeId);
-    if (v) v.likes = updated.likes;
-    document.getElementById('likeNum').textContent = updated.likes;
-
-    isLiked ? likedIds.delete(activeId) : likedIds.add(activeId);
-    localStorage.setItem('irontv_liked', JSON.stringify([...likedIds]));
-    isLiked ? btn.classList.remove('liked') : btn.classList.add('liked');
-    renderFeed();
-  } catch(e) { showToast('⚠ Sin conexión'); }
+  v.likes = Math.max(0, v.likes + (isLiked ? -1 : 1));
+  isLiked ? likedIds.delete(activeId) : likedIds.add(activeId);
+  localStorage.setItem('irontv_liked', JSON.stringify([...likedIds]));
+  saveVideos();
+  document.getElementById('likeNum').textContent = v.likes;
+  const btn = document.getElementById('likeAct');
+  isLiked ? btn.classList.remove('liked') : btn.classList.add('liked');
+  renderFeed();
 }
 
-// ── DELETE ────────────────────────────────────────────────────────────────
-async function deleteVideo(e, id) {
+function deleteVideo(e, id) {
   e.stopPropagation();
   if (!confirm('¿Eliminar este video?')) return;
-  try {
-    await fetch(`${getApi()}/api/videos/${id}`, {method:'DELETE'});
-    if (activeId === id) {
-      activeId = null;
-      document.getElementById('mainIframe').src = '';
-      document.getElementById('mainIframe').style.display = 'none';
-      document.getElementById('placeholder').style.display = 'flex';
-      document.getElementById('videoMeta').style.display = 'none';
-      document.getElementById('videoActions').style.display = 'none';
-    }
-    videos = videos.filter(x => x.id !== id);
-    renderFeed();
-    showToast('Video eliminado');
-  } catch(e) { showToast('⚠ Error al eliminar'); }
+  const wasActive = activeId === id;
+  videos = videos.filter(x => x.id !== id);
+  saveVideos();
+  if (wasActive) {
+    activeId = null;
+    document.getElementById('mainIframe').src = '';
+    document.getElementById('mainIframe').style.display = 'none';
+    document.getElementById('placeholder').style.display = 'flex';
+    document.getElementById('videoMeta').style.display = 'none';
+    document.getElementById('videoActions').style.display = 'none';
+    const filtered = getFiltered();
+    if (filtered.length) selectVideo(filtered[0].id);
+  }
+  renderFeed();
+  showToast('Video eliminado');
 }
 
-// ── CATEGORIES ────────────────────────────────────────────────────────────
 document.getElementById('catsBar').addEventListener('click', e => {
   const p = e.target.closest('.pill'); if (!p) return;
   document.querySelectorAll('.pill').forEach(x => x.classList.remove('on'));
   p.classList.add('on');
   currentCat = p.dataset.cat;
-  loadVideos();
+  renderFeed();
+  const filtered = getFiltered();
+  if (filtered.length && !filtered.find(v => v.id === activeId)) {
+    selectVideo(filtered[0].id);
+  }
 });
 
-// ── MODAL ─────────────────────────────────────────────────────────────────
 function openModal()  { document.getElementById('modalBg').classList.add('open'); }
 function closeModal() {
   document.getElementById('modalBg').classList.remove('open');
   ['urlIn','titleIn','durIn','authorIn'].forEach(id => document.getElementById(id).value = '');
   hidePreview();
-  document.getElementById('btnAdd').disabled = false;
+  const btn = document.getElementById('btnAdd');
+  btn.disabled = false;
+  btn.textContent = 'Agregar';
 }
 function bgClick(e) { if (e.target === document.getElementById('modalBg')) closeModal(); }
 
-// ── YOUTUBE PREVIEW (con debounce) ────────────────────────────────────────
 function extractYTId(url) {
   const m = url.match(/(?:v=|youtu\.be\/|embed\/)([A-Za-z0-9_-]{11})/);
   return m ? m[1] : null;
@@ -424,11 +359,9 @@ function showPreview(ytId) {
   const box = document.getElementById('previewBox');
   const iframe = document.getElementById('previewIframe');
   const spinner = document.getElementById('prevSpinner');
-
   spinner.style.display = 'flex';
   iframe.style.display = 'none';
   box.classList.add('show');
-
   iframe.onload = () => { spinner.style.display = 'none'; iframe.style.display = 'block'; };
   iframe.src = `https://www.youtube.com/embed/${ytId}?rel=0`;
 }
@@ -438,8 +371,7 @@ function hidePreview() {
   document.getElementById('previewIframe').src = '';
 }
 
-// ── ADD VIDEO ─────────────────────────────────────────────────────────────
-async function addVideo() {
+function addVideo() {
   const url    = document.getElementById('urlIn').value.trim();
   const title  = document.getElementById('titleIn').value.trim();
   const cat    = document.getElementById('catIn').value;
@@ -455,35 +387,31 @@ async function addVideo() {
   btn.disabled = true;
   btn.textContent = 'Guardando...';
 
-  try {
-    const res = await fetch(`${getApi()}/api/videos`, {
-      method: 'POST',
-      headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({yt_id: ytId, title, author, category: cat, duration: dur || null})
-    });
-    if (!res.ok) throw new Error('Error ' + res.status);
-    const newVideo = await res.json();
-    videos.unshift(newVideo);
-    closeModal();
-    renderFeed();
-    selectVideo(newVideo.id);
-    showToast('✓ Video agregado y guardado');
-  } catch(e) {
-    showToast('⚠ Error al guardar. ¿Está corriendo la API?');
-  } finally {
-    btn.disabled = false;
-    btn.textContent = 'Agregar';
-  }
+  const newVideo = {
+    id: nextId++,
+    yt_id: ytId,
+    title,
+    author,
+    category: cat,
+    duration: dur || null,
+    likes: 0,
+    created_at: new Date().toISOString()
+  };
+
+  videos.unshift(newVideo);
+  saveVideos();
+  closeModal();
+  renderFeed();
+  selectVideo(newVideo.id);
+  showToast('✓ Video guardado');
 }
 
-// ── TOAST ─────────────────────────────────────────────────────────────────
 function showToast(msg) {
   const t = document.getElementById('toast');
   t.textContent = msg; t.classList.add('show');
   setTimeout(() => t.classList.remove('show'), 2400);
 }
 
-// ── INIT ──────────────────────────────────────────────────────────────────
 loadVideos();
 </script>
 </body>
