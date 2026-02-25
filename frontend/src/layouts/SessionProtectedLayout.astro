@@ -1,13 +1,50 @@
 ---
 import '../styles/global.css';
-import DemoBanner from '../components/DemoBanner.astro';
-import { Dumbbell } from 'lucide-react';
+import { Dumbbell, User, LogOut } from 'lucide-react';
+import { supabase } from '../lib/supabase';
 
 interface Props {
     title: string;
 }
 
 const { title } = Astro.props;
+
+// Verificar cookie de sesión SSR primero
+const accessToken = Astro.cookies.get('sb-access-token');
+
+if (!accessToken) {
+  return Astro.redirect('/login');
+}
+
+let currentUser = null;
+
+try {
+  const supabaseUrl = 'https://deqwjyvqchtsexttwftl.supabase.co';
+  const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRlcXdqeXZxY2h0c2V4dHR3ZnRsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIwMDMzMDgsImV4cCI6MjA4NzU3OTMwOH0.soQ9wQyd2lQ-q5xi-YaARIMmTgecuErsBAgale85wpA';
+
+  // 1. Fetch user to validate token
+  const userRes = await fetch(`${supabaseUrl}/auth/v1/user`, {
+    headers: {
+      'apikey': supabaseAnonKey,
+      'Authorization': `Bearer ${accessToken.value}`
+    }
+  });
+
+  if (!userRes.ok) {
+    console.error("Layout SSR Auth: Invalid token", userRes.status);
+    return Astro.redirect('/login');
+  }
+  
+  const userData = await userRes.json();
+  if (!userData) {
+    return Astro.redirect('/login');
+  }
+  
+  currentUser = userData;
+} catch (e) {
+  console.error("Error fetching user data in layout:", e);
+  return Astro.redirect('/login');
+}
 ---
 
 <html lang="es">
@@ -17,7 +54,6 @@ const { title } = Astro.props;
     <title>{title} - Iron Diary</title>
 </head>
 <body class="bg-background text-foreground min-h-screen">
-    <DemoBanner />
     
     <header class="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div class="container mx-auto flex h-14 max-w-screen-2xl items-center justify-between">
@@ -29,22 +65,19 @@ const { title } = Astro.props;
                 <nav class="flex items-center space-x-6 text-sm font-medium">
                     <a href="/dashboard-user" class="transition-colors hover:text-foreground/80 text-foreground">Dashboard</a>
                     <a href="/workout" class="transition-colors hover:text-foreground/80 text-foreground/60">Entrenamiento</a>
-                    <a href="/ironTV" class="transition-colors hover:text-foreground/80 text-foreground/60">IronTV</a>
                 </nav>
             </div>
             
             <!-- User menu -->
             <div class="flex items-center space-x-4">
                 <div data-user-info class="flex items-center space-x-2 cursor-pointer hover:bg-accent hover:text-accent-foreground rounded-lg px-3 py-2 transition-colors">
-                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-                    </svg>
-                    <span class="text-sm font-medium">Usuario</span>
+                    <User className="h-4 w-4" />
+                    <span class="text-sm font-medium" data-user-name>
+                        {currentUser?.user_metadata?.full_name || currentUser?.email || 'Usuario'}
+                    </span>
                 </div>
                 <button data-logout class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-8 px-3">
-                    <svg class="h-4 w-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
-                    </svg>
+                    <LogOut className="h-4 w-4 mr-1" />
                     Cerrar sesión
                 </button>
             </div>
@@ -55,8 +88,8 @@ const { title } = Astro.props;
         <slot />
     </main>
 
-    <script type="module">
-        import sessionManager from '/session-manager.js';
+    <script>
+        import { sessionManager } from '../lib/session-manager.js';
 
         // Inicializar gestor de sesiones
         document.addEventListener('DOMContentLoaded', async () => {

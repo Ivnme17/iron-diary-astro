@@ -105,13 +105,6 @@ import { Dumbbell } from 'lucide-react';
                 <a href="/login" class="ml-1 text-primary hover:underline">Inicia sesión</a>
             </div>
         </div>
-
-        <!-- Enlace a demo -->
-        <div class="mt-4 text-center">
-            <a href="/dashboard" class="text-sm text-muted-foreground hover:text-foreground">
-                ¿Solo quieres ver la demo? →
-            </a>
-        </div>
     </div>
 
     <script type="module">
@@ -144,6 +137,9 @@ import { Dumbbell } from 'lucide-react';
                 });
                 
                 if (user) {
+                    if (session) {
+                         document.cookie = `sb-access-token=${session.access_token}; path=/; max-age=${session.expires_in}; SameSite=Lax`;
+                    }
                     successDiv.textContent = '¡Cuenta creada exitosamente! Revisa tu email para confirmar.';
                     successDiv.classList.remove('hidden');
                     errorDiv.classList.add('hidden');
@@ -153,11 +149,7 @@ import { Dumbbell } from 'lucide-react';
                     
                     // Redirigir después de 3 segundos si el email está confirmado
                     setTimeout(() => {
-                        if (session) {
-                            window.location.href = '/dashboard-user';
-                        } else {
-                            successDiv.textContent = '¡Cuenta creada! Por favor confirma tu email y luego inicia sesión.';
-                        }
+                        window.location.href = '/';
                     }, 3000);
                 }
             } catch (error) {

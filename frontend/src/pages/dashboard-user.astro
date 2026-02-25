@@ -5,29 +5,60 @@ import WorkoutCard from '../components/WorkoutCard.tsx';
 import { Dumbbell, Plus, User, LogOut } from 'lucide-react';
 import { supabaseApi, supabase, type Workout, type Stats } from '../lib/supabase';
 
+// Verificar cookie de sesión SSR primero
+const accessToken = Astro.cookies.get('sb-access-token');
+
+if (!accessToken) {
+  return Astro.redirect('/login');
+}
+
 let workouts: Workout[] = [];
 let stats: Stats = { total_workouts: 0, total_exercises: 0, total_kg: 0 };
 let fetchError = false;
 let currentUser = null;
 
 try {
-  // Obtener usuario actual
-  const { data: { user } } = await supabase.auth.getUser();
-  currentUser = user;
+  const supabaseUrl = 'https://deqwjyvqchtsexttwftl.supabase.co';
+  const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRlcXdqeXZxY2h0c2V4dHR3ZnRsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIwMDMzMDgsImV4cCI6MjA4NzU3OTMwOH0.soQ9wQyd2lQ-q5xi-YaARIMmTgecuErsBAgale85wpA';
+  const headers = {
+    'apikey': supabaseAnonKey,
+    'Authorization': `Bearer ${accessToken.value}`,
+    'Content-Profile': 'public' // required for rest data fetching
+  };
+
+  // 1. Fetch user to validate token
+  const userRes = await fetch(`${supabaseUrl}/auth/v1/user`, { headers });
+  if (!userRes.ok) throw new Error('Invalid token');
   
-  if (user) {
-    // Fetch desde Supabase
-    const [workoutsData, statsData] = await Promise.all([
-      supabaseApi.getWorkouts(),
-      supabaseApi.getStats()
-    ]);
-    
-    workouts = workoutsData;
-    stats = statsData;
-  }
+  const userData = await userRes.json();
+  if (!userData) throw new Error('No user data');
+  currentUser = userData;
+
+  // 2. Fetch workouts for the user
+  const workoutsRes = await fetch(
+    `${supabaseUrl}/rest/v1/workouts?select=*&user_id=eq.${currentUser.id}&order=date.desc`, 
+    { headers }
+  );
+  if (!workoutsRes.ok) throw new Error('Failed to fetch workouts');
+  workouts = await workoutsRes.json();
+
+  // 3. Compute stats
+  const allExercises = workouts.flatMap(w => w.exercises || []);
+  const total_kg = Math.round(
+    allExercises.reduce((sum, ex) => sum + (ex.weight * ex.sets * ex.reps), 0) / 1000
+  );
+
+  stats = {
+    total_workouts: workouts.length,
+    total_exercises: allExercises.length,
+    total_kg
+  };
+
 } catch (e) {
-  console.error("Error fetching from Supabase:", e);
+  console.error("SSR REST API Error fetching from Supabase in dashboard-user:", e);
   fetchError = true;
+  // Temporary: we won't redirect on data loop failure just to see the page load
+  // return Astro.redirect('/login');
 }
 ---
 
@@ -38,7 +69,6 @@ try {
     <title>Dashboard - Iron Diary</title>
 </head>
 <body class="bg-background text-foreground min-h-screen">
-    <DemoBanner />
     
     <header class="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div class="container mx-auto flex h-14 max-w-screen-2xl items-center justify-between">
@@ -50,15 +80,14 @@ try {
                 <nav class="flex items-center space-x-6 text-sm font-medium">
                     <a href="/dashboard-user" class="transition-colors hover:text-foreground/80 text-foreground">Dashboard</a>
                     <a href="/workout" class="transition-colors hover:text-foreground/80 text-foreground/60">Entrenamiento</a>
-                    <a href="/ironTV" class="transition-colors hover:text-foreground/80 text-foreground/60">IronTV</a>
                 </nav>
             </div>
             
             <!-- User menu -->
             <div class="flex items-center space-x-4">
-                <div id="userInfo" data-user-info class="flex items-center space-x-2 cursor-pointer hover:bg-accent hover:text-accent-foreground rounded-lg px-3 py-2 transition-colors">
+                <div data-user-info class="flex items-center space-x-2 cursor-pointer hover:bg-accent hover:text-accent-foreground rounded-lg px-3 py-2 transition-colors">
                     <User className="h-4 w-4" />
-                    <span class="text-sm font-medium" id="userEmail">
+                    <span class="text-sm font-medium" id="userEmail" data-user-name>
                         {currentUser?.user_metadata?.full_name || currentUser?.email || 'Usuario'}
                     </span>
                 </div>
@@ -146,8 +175,8 @@ try {
         )}
     </main>
 
-    <script type="module">
-        import sessionManager from '/session-manager.js';
+    <script>
+        import { sessionManager } from '../lib/session-manager.js';
 
         // Inicializar gestor de sesiones
         document.addEventListener('DOMContentLoaded', async () => {

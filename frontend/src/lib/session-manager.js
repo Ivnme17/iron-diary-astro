@@ -1,5 +1,5 @@
 // Gestor de sesiones para Iron Diary
-import { authApi } from '/supabase-client.js';
+import { authApi } from '../../public/supabase-client.js';
 
 class SessionManager {
     constructor() {
@@ -10,16 +10,16 @@ class SessionManager {
     // Inicializar el gestor de sesiones
     async init() {
         if (this.isInitialized) return;
-        
+
         try {
             const user = await authApi.getCurrentUser();
             this.currentUser = user;
             this.isInitialized = true;
-            
+
             // Escuchar cambios de autenticación
             authApi.onAuthStateChange((event, session) => {
                 this.currentUser = session?.user || null;
-                
+
                 // Redirigir si no hay sesión y estamos en una página protegida
                 if (!this.currentUser && this.isProtectedPage()) {
                     window.location.href = '/login';
@@ -62,6 +62,7 @@ class SessionManager {
         try {
             await authApi.signOut();
             this.currentUser = null;
+            document.cookie = 'sb-access-token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
             window.location.href = '/login';
         } catch (error) {
             console.error('Error signing out:', error);
@@ -70,7 +71,7 @@ class SessionManager {
 
     // Actualizar información del usuario en la UI
     updateUserInfo() {
-        const userElements = document.querySelectorAll('[data-user-info]');
+        const userElements = document.querySelectorAll('[data-user-name]');
         userElements.forEach(element => {
             if (this.currentUser) {
                 const displayName = this.currentUser.user_metadata?.full_name || this.currentUser.email;
@@ -112,7 +113,4 @@ class SessionManager {
 }
 
 // Crear instancia global
-const sessionManager = new SessionManager();
-
-// Exportar para uso en otros scripts
-export default sessionManager;
+export const sessionManager = new SessionManager();

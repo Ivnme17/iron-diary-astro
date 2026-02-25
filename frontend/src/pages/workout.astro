@@ -94,9 +94,9 @@ import { Dumbbell, ArrowLeft, Save, Plus } from 'lucide-react';
         </form>
     </div>
 
-    <script type="module">
-        import sessionManager from '/session-manager.js';
-        import { supabaseApi } from '/supabase-client.js';
+    <script>
+        import { sessionManager } from '../lib/session-manager.js';
+        import { supabaseApi } from '../lib/supabase';
 
         // Inicializar gestor de sesiones
         document.addEventListener('DOMContentLoaded', async () => {

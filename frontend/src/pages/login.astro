@@ -70,13 +70,6 @@ import { Dumbbell } from 'lucide-react';
                 <a href="/register" class="ml-1 text-primary hover:underline">Regístrate</a>
             </div>
         </div>
-
-        <!-- Enlace a demo -->
-        <div class="mt-4 text-center">
-            <a href="/dashboard" class="text-sm text-muted-foreground hover:text-foreground">
-                ¿Solo quieres ver la demo? →
-            </a>
-        </div>
     </div>
 
     <script type="module">
@@ -84,24 +77,42 @@ import { Dumbbell } from 'lucide-react';
 
         const form = document.getElementById('loginForm');
         const errorDiv = document.getElementById('errorMessage');
+        const submitButton = form.querySelector('button[type="submit"]');
 
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
+            console.log("Login form submitted");
             
             const email = form.email.value;
             const password = form.password.value;
+            
+            // Loading state
+            const originalText = submitButton.textContent;
+            submitButton.disabled = true;
+            submitButton.innerHTML = '<span class="animate-pulse">Iniciando...</span>';
+            errorDiv.classList.add('hidden');
 
             try {
+                console.log("Attempting Supabase sign-in for:", email);
                 const { user, session } = await authApi.signIn(email, password);
+                console.log("Sign-in successful", { user_id: user?.id, has_session: !!session });
                 
-                if (user) {
-                    // Redirigir al dashboard del usuario
-                    window.location.href = '/dashboard-user';
+                if (user && session) {
+                    // Guardar cookie para SSR
+                    document.cookie = `sb-access-token=${session.access_token}; path=/; max-age=${session.expires_in}; SameSite=Lax`;
+                    console.log("Cookie set, redirecting to /...");
+                    // Redirigir al landing page
+                    window.location.href = '/';
+                } else {
+                     console.warn("Sign-in succeeded but no user or session returned.");
+                     throw new Error("Respuesta incompleta del servidor.");
                 }
             } catch (error) {
                 console.error('Error de login:', error);
                 errorDiv.textContent = error.message || 'Error al iniciar sesión';
                 errorDiv.classList.remove('hidden');
+                submitButton.disabled = false;
+                submitButton.textContent = originalText;
             }
         });
     </script>
