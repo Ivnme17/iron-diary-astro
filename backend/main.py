@@ -1,5 +1,7 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 from models import Exercise, Workout, Stats
 from typing import List
 
@@ -122,3 +124,9 @@ def get_stats():
         total_exercises=total_exercises,
         total_kg=total_kg,
     )
+
+
+@app.get("/favicon.ico", include_in_schema=False)
+async def favicon():
+    """Sirve el favicon para el backend."""
+    return FileResponse("favicon.ico")
