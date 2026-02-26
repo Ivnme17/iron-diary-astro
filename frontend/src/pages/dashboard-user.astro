@@ -36,14 +36,14 @@ try {
 
   // 2. Fetch workouts for the user
   const workoutsRes = await fetch(
-    `${supabaseUrl}/rest/v1/workouts?select=*&user_id=eq.${currentUser.id}&order=date.desc`, 
+    `${supabaseUrl}/rest/v1/entrenamientos?select=*&id_usuario=eq.${currentUser.id}&order=fecha.desc`, 
     { headers }
   );
   if (!workoutsRes.ok) throw new Error('Failed to fetch workouts');
   workouts = await workoutsRes.json();
 
   // 3. Compute stats
-  const allExercises = workouts.flatMap(w => w.exercises || []);
+  const allExercises = workouts.flatMap(w => w.ejercicios || []);
   const total_kg = Math.round(
     allExercises.reduce((sum, ex) => sum + (ex.weight * ex.sets * ex.reps), 0) / 1000
   );
@@ -154,7 +154,7 @@ try {
                 {workouts.length === 0 ? (
                     <div class="flex flex-col items-center justify-center rounded-lg border border-dashed border-gray-300 p-8 text-center">
                         <Dumbbell className="h-12 w-12 text-gray-400 mb-4" />
-                        <h3 class="text-lg font-semibold text-gray-900 mb-2">No hay entrenamientos</h3>
+                        <h3 class="text-lg font-semibold text-white-900 mb-2">No hay entrenamientos</h3>
                         <p class="text-gray-600 mb-4">Comienza registrando tu primer entrenamiento</p>
                         <a href="/workout" class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-4 py-2">
                             <Plus className="h-4 w-4 mr-2" />

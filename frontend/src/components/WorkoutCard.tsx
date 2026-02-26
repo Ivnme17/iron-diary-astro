@@ -11,9 +11,9 @@ interface Exercise {
 
 interface Workout {
     id: string;
-    date: string;
-    routine_name: string;
-    exercises: Exercise[];
+    fecha: string;
+    nombre_rutina: string;
+    ejercicios: Exercise[];
 }
 
 // Function to get emoji for routine names
@@ -76,7 +76,7 @@ function getRoutineEmoji(routineName: string): string {
 
 export default function WorkoutCard({ workout, index }: { workout: Workout; index: number }) {
     const [expanded, setExpanded] = useState(false);
-    const routineEmoji = getRoutineEmoji(workout.routine_name);
+    const routineEmoji = getRoutineEmoji(workout.nombre_rutina);
     const cardStyle = {
         animationDelay: `${index * 80}ms`,
         animationFillMode: "both" as const,
@@ -93,11 +93,11 @@ export default function WorkoutCard({ workout, index }: { workout: Workout; inde
             <div className="mb-3 flex items-start justify-between">
                 <div>
                     <h3 className="text-2xl text-foreground" style={titleStyle}>
-                        {routineEmoji} {workout.routine_name.toUpperCase()}
+                        {routineEmoji} {workout.nombre_rutina.toUpperCase()}
                     </h3>
                     <p className="flex items-center gap-1 text-sm text-muted-foreground">
                         <Calendar className="h-3.5 w-3.5" />
-                        {new Date(workout.date).toLocaleDateString("es-ES", {
+                        {new Date(workout.fecha).toLocaleDateString("es-ES", {
                             day: "numeric",
                             month: "short",
                             year: "numeric",
@@ -123,7 +123,7 @@ export default function WorkoutCard({ workout, index }: { workout: Workout; inde
             </div>
 
             <div className="space-y-1.5">
-                {(expanded ? workout.exercises : workout.exercises.slice(0, 2)).map((ex) => (
+                {(expanded ? workout.ejercicios : workout.ejercicios.slice(0, 2)).map((ex) => (
                     <div
                         key={ex.id}
                         className="flex items-center justify-between rounded-lg bg-secondary/50 px-3 py-2 text-sm"
@@ -134,12 +134,12 @@ export default function WorkoutCard({ workout, index }: { workout: Workout; inde
                         </span>
                     </div>
                 ))}
-                {!expanded && workout.exercises.length > 2 && (
+                {!expanded && workout.ejercicios.length > 2 && (
                     <button
                         onClick={() => setExpanded(true)}
                         className="w-full rounded-lg py-1 text-xs text-muted-foreground hover:text-primary transition-colors cursor-pointer"
                     >
-                        +{workout.exercises.length - 2} ejercicios más
+                        +{workout.ejercicios.length - 2} ejercicios más
                     </button>
                 )}
             </div>

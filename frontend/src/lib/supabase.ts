@@ -16,12 +16,12 @@ export interface User {
 
 export interface Workout {
   id: string
-  user_id: string
-  date: string
-  routine_name: string
-  exercises: Exercise[]
-  created_at: string
-  updated_at: string
+  id_usuario: string
+  fecha: string
+  nombre_rutina: string
+  ejercicios: Exercise[]
+  fecha_creacion: string
+  fecha_actualizacion: string
 }
 
 export interface Exercise {
@@ -92,23 +92,23 @@ export const supabaseApi = {
     if (!user) throw new Error('Usuario no autenticado')
 
     const { data, error } = await supabase
-      .from('workouts')
+      .from('entrenamientos')
       .select('*')
-      .eq('user_id', user.id)
-      .order('date', { ascending: false })
+      .eq('id_usuario', user.id)
+      .order('fecha', { ascending: false })
     
     if (error) throw error
     return data || []
   },
 
   // Crear nuevo entrenamiento
-  async createWorkout(workout: Omit<Workout, 'id' | 'created_at' | 'updated_at' | 'user_id'>): Promise<Workout> {
+  async createWorkout(workout: Omit<Workout, 'id' | 'fecha_creacion' | 'fecha_actualizacion' | 'id_usuario'>): Promise<Workout> {
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) throw new Error('Usuario no autenticado')
 
     const { data, error } = await supabase
-      .from('workouts')
-      .insert([{ ...workout, user_id: user.id }])
+      .from('entrenamientos')
+      .insert([{ ...workout, id_usuario: user.id }])
       .select()
       .single()
     
@@ -119,8 +119,8 @@ export const supabaseApi = {
   // Actualizar entrenamiento
   async updateWorkout(id: string, workout: Partial<Workout>): Promise<Workout> {
     const { data, error } = await supabase
-      .from('workouts')
-      .update({ ...workout, updated_at: new Date().toISOString() })
+      .from('entrenamientos')
+      .update({ ...workout, fecha_actualizacion: new Date().toISOString() })
       .eq('id', id)
       .select()
       .single()
@@ -132,7 +132,7 @@ export const supabaseApi = {
   // Eliminar entrenamiento
   async deleteWorkout(id: string): Promise<void> {
     const { error } = await supabase
-      .from('workouts')
+      .from('entrenamientos')
       .delete()
       .eq('id', id)
     
@@ -145,9 +145,9 @@ export const supabaseApi = {
     if (!user) throw new Error('Usuario no autenticado')
 
     const { data: workouts, error } = await supabase
-      .from('workouts')
-      .select('exercises')
-      .eq('user_id', user.id)
+      .from('entrenamientos')
+      .select('ejercicios')
+      .eq('id_usuario', user.id)
     
     if (error) throw error
     
