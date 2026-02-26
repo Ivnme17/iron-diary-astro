@@ -2,7 +2,7 @@
 import '../styles/global.css';
 import DemoBanner from '../components/DemoBanner.astro';
 import WorkoutCard from '../components/WorkoutCard.tsx';
-import { Dumbbell, Plus, User, LogOut } from 'lucide-react';
+import { Dumbbell, Plus, User, LogOut, Trash2 } from 'lucide-react';
 import { supabaseApi, supabase, type Workout, type Stats } from '../lib/supabase';
 
 // Verificar cookie de sesión SSR primero
@@ -155,6 +155,14 @@ try {
                             <Plus className="h-4 w-4 mr-2" />
                             Nuevo Entrenamiento
                         </a>
+                        <button 
+                            id="clearAllBtn"
+                            class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-gray-300 hover:bg-red-500 hover:text-white h-9 px-4 py-2"
+                            onclick="clearAllWorkouts()"
+                        >
+                            <Trash2 className="h-4 w-4 mr-2" />
+                            Limpiar Todo
+                        </button>
                     </div>
                 </div>
 
@@ -188,6 +196,29 @@ try {
         )}
     </main>
 
+    <script>
+        async function clearAllWorkouts() {
+            if (confirm('¿Estás seguro de que quieres eliminar TODOS los entrenamientos? Esta acción no se puede deshacer.')) {
+                try {
+                    const { supabaseApi } = await import('../lib/supabase');
+                    
+                    // Obtener todos los entrenamientos del usuario
+                    const { data: workouts } = await supabaseApi.getWorkouts();
+                    
+                    // Eliminar cada entrenamiento
+                    for (const workout of workouts) {
+                        await supabaseApi.deleteWorkout(workout.id);
+                    }
+                    
+                    // Recargar la página
+                    window.location.reload();
+                } catch (error) {
+                    console.error('Error al eliminar entrenamientos:', error);
+                    alert('Error al eliminar los entrenamientos. Por favor, inténtalo de nuevo.');
+                }
+            }
+        }
+    </script>
     <script>
         import { sessionManager } from '../lib/session-manager.js';
 

@@ -18,55 +18,53 @@ interface Workout {
 
 // Function to get emoji for routine names
 function getRoutineEmoji(routineName: string): string {
-    const name = routineName.toLowerCase();
-    
     // Push Day variations
-    if (name.includes('push') || name.includes('pecho') || name.includes('biceps') || name.includes('triceps') || name.includes('hombros')) {
+    if (routineName.includes('push') || routineName.includes('pecho') || routineName.includes('press') || routineName.includes('banc')) {
         return '💪';
     }
     
     // Pull Day variations
-    if (name.includes('pull') || name.includes('espalda') || name.includes('dorsal') || name.includes('jalón')) {
+    if (routineName.includes('pull') || routineName.includes('espalda') || routineName.includes('dorsal') || routineName.includes('jalón')) {
         return '🎯';
     }
     
     // Leg Day variations
-    if (name.includes('leg') || name.includes('pierna') || name.includes('cuádriceps') || name.includes('femoral') || name.includes('sentadilla')) {
+    if (routineName.includes('leg') || routineName.includes('pierna') || routineName.includes('cuádriceps') || routineName.includes('femoral') || routineName.includes('sentadilla')) {
         return '🦵';
     }
     
     // Full Body variations
-    if (name.includes('full') || name.includes('completo') || name.includes('total')) {
+    if (routineName.includes('full') || routineName.includes('completo') || routineName.includes('total')) {
         return '🏋️';
     }
     
     // Upper Body variations
-    if (name.includes('upper') || name.includes('superior')) {
+    if (routineName.includes('upper') || routineName.includes('superior')) {
         return '💪';
     }
     
     // Lower Body variations
-    if (name.includes('lower') || name.includes('inferior')) {
+    if (routineName.includes('lower') || routineName.includes('inferior')) {
         return '🦵';
     }
     
     // Cardio variations
-    if (name.includes('cardio') || name.includes('correr') || name.includes('carrera')) {
+    if (routineName.includes('cardio') || routineName.includes('correr') || routineName.includes('carrera')) {
         return '🔥';
     }
     
     // HIIT variations
-    if (name.includes('hiit') || name.includes('intenso')) {
+    if (routineName.includes('hiit') || routineName.includes('intenso')) {
         return '⚡';
     }
     
     // PPL variations
-    if (name.includes('ppl') || name.includes('push/pull')) {
+    if (routineName.includes('ppl') || routineName.includes('push/pull')) {
         return '📊';
     }
     
     // Bro Split variations
-    if (name.includes('bro') || name.includes('split')) {
+    if (routineName.includes('bro') || routineName.includes('split')) {
         return '💎';
     }
     
