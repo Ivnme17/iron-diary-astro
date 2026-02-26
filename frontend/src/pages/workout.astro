@@ -90,7 +90,11 @@ import { EXERCISES_LIST, ROUTINES_LIST } from '../data/exercises';
             </div>
 
             <!-- Submit Button -->
-            <div class="flex justify-end">
+            <div class="flex justify-end gap-2">
+                <button type="button" id="cancelBtn" class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-gray-300 hover:bg-secondary hover:text-secondary-foreground h-10 px-6">
+                    <ArrowLeft className="h-4 w-4 mr-2" />
+                    Cancelar
+                </button>
                 <button type="submit" class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-6">
                     <Save className="h-4 w-4 mr-2" />
                     Guardar Entrenamiento
@@ -103,6 +107,7 @@ import { EXERCISES_LIST, ROUTINES_LIST } from '../data/exercises';
         import { sessionManager } from '../lib/session-manager.js';
         import { supabaseApi } from '../lib/supabase';
         import { EXERCISES_LIST, ROUTINES_LIST } from '../data/exercises.js';
+        import { getRoutineById } from '../data/preset-routines.js';
 
         // Inicializar gestor de sesiones
         document.addEventListener('DOMContentLoaded', async () => {
@@ -112,9 +117,149 @@ import { EXERCISES_LIST, ROUTINES_LIST } from '../data/exercises';
             // Configurar autocompletado simple
             setupSimpleAutocomplete('routineName', 'routineSuggestions', ROUTINES_LIST);
             
+            // Cargar rutina predefinida si existe
+            loadPresetRoutineIfSelected();
+            
             // Configurar formulario
             setupWorkoutForm();
+            
+            // Configurar botón de cancelar
+            const cancelBtn = document.getElementById('cancelBtn');
+            if (cancelBtn) {
+                cancelBtn.addEventListener('click', () => {
+                    if (confirm('¿Estás seguro de que quieres cancelar? Se perderán todos los datos no guardados.')) {
+                        window.location.href = '/dashboard-user';
+                    }
+                });
+            }
         });
+
+        function loadPresetRoutineIfSelected() {
+            const presetRoutineData = sessionStorage.getItem('selectedPresetRoutine');
+            if (!presetRoutineData) return;
+
+            try {
+                const routine = JSON.parse(presetRoutineData);
+                
+                // Limpiar sessionStorage
+                sessionStorage.removeItem('selectedPresetRoutine');
+                
+                // Llenar nombre de rutina
+                const routineNameInput = document.getElementById('routineName');
+                if (routineNameInput) {
+                    routineNameInput.value = routine.name;
+                }
+                
+                // Establecer fecha actual si no está definida
+                const workoutDateInput = document.getElementById('workoutDate');
+                if (workoutDateInput && !workoutDateInput.value) {
+                    workoutDateInput.value = new Date().toISOString().split('T')[0];
+                }
+                
+                // Limpiar ejercicios existentes y agregar los de la rutina
+                const exercisesContainer = document.getElementById('exercisesContainer');
+                if (exercisesContainer) {
+                    // Limpiar ejercicios existentes
+                    exercisesContainer.innerHTML = '';
+                    
+                    // Agregar ejercicios de la rutina predefinida
+                    routine.exercises.forEach((exercise, index) => {
+                        addExerciseItem(exercise);
+                    });
+                }
+                
+                // Mostrar notificación
+                showNotification(`Rutina "${routine.name}" cargada exitosamente`, 'success');
+                
+            } catch (error) {
+                console.error('Error loading preset routine:', error);
+                showNotification('Error al cargar la rutina predefinida', 'error');
+            }
+        }
+
+        function addExerciseItem(presetExercise = null) {
+            const exerciseDiv = document.createElement('div');
+            exerciseDiv.className = 'exercise-item rounded-lg border border-border p-4';
+            
+            // Valores por defecto o del preset
+            const defaultValues = presetExercise || {
+                name: '',
+                sets: 4,
+                reps: 12,
+                weight: 0
+            };
+            
+            exerciseDiv.innerHTML = `
+                <div class="grid gap-4 sm:grid-cols-4">
+                    <div class="sm:col-span-2 relative">
+                        <label class="block text-sm font-medium text-foreground mb-2">Nombre del Ejercicio</label>
+                        <input type="text" name="exerciseName" placeholder="Ej: Press de Banca" value="${defaultValues.name}" class="w-full h-10 rounded-md border border-border bg-background px-3 py-2 text-sm" required />
+                        <div class="exercise-suggestions absolute z-50 w-full mt-1 max-h-60 overflow-auto rounded-md border border-border bg-popover shadow-lg hidden"></div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-foreground mb-2">Series</label>
+                        <input type="number" name="sets" min="1" placeholder="4" value="${defaultValues.sets}" class="w-full h-10 rounded-md border border-border bg-background px-3 py-2 text-sm" required />
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-foreground mb-2">Repeticiones</label>
+                        <input type="number" name="reps" min="1" placeholder="12" value="${defaultValues.reps}" class="w-full h-10 rounded-md border border-border bg-background px-3 py-2 text-sm" required />
+                    </div>
+                </div>
+                <div class="mt-4">
+                    <label class="block text-sm font-medium text-foreground mb-2">Peso (kg)</label>
+                    <input type="number" name="weight" min="0" step="0.5" placeholder="60" value="${defaultValues.weight}" class="w-full h-10 rounded-md border border-border bg-background px-3 py-2 text-sm" required />
+                </div>
+                <button type="button" class="remove-exercise mt-2 text-sm text-destructive hover:text-destructive/80">Eliminar Ejercicio</button>
+            `;
+            
+            const exercisesContainer = document.getElementById('exercisesContainer');
+            exercisesContainer?.appendChild(exerciseDiv);
+            
+            // Configurar autocompletado para el nuevo ejercicio
+            const newExerciseInput = exerciseDiv.querySelector('input[name="exerciseName"]');
+            const newExerciseSuggestions = exerciseDiv.querySelector('.exercise-suggestions');
+            if (newExerciseInput && newExerciseSuggestions) {
+                setupSimpleAutocomplete(newExerciseInput.id || 'exercise-' + Date.now(), newExerciseSuggestions.id || 'suggestions-' + Date.now(), EXERCISES_LIST);
+            }
+            
+            // Configurar botón de eliminar
+            const removeBtn = exerciseDiv.querySelector('.remove-exercise');
+            removeBtn?.addEventListener('click', () => {
+                exerciseDiv.remove();
+            });
+        }
+
+        function showNotification(message, type = 'info') {
+            // Crear elemento de notificación
+            const notification = document.createElement('div');
+            notification.className = `fixed top-4 right-4 z-50 px-4 py-3 rounded-lg shadow-lg transition-all duration-300 ${
+                type === 'success' ? 'bg-green-500 text-white' :
+                type === 'error' ? 'bg-red-500 text-white' :
+                'bg-blue-500 text-white'
+            }`;
+            notification.innerHTML = `
+                <div class="flex items-center">
+                    <span class="mr-2">${
+                        type === 'success' ? '✓' :
+                        type === 'error' ? '✗' :
+                        'ℹ'
+                    }</span>
+                    <span>${message}</span>
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Remover después de 3 segundos
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.parentNode.removeChild(notification);
+                    }
+                }, 300);
+            }, 3000);
+        }
 
         function setupSimpleAutocomplete(inputId, suggestionsId, suggestions) {
             const input = document.getElementById(inputId);

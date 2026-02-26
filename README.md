@@ -34,11 +34,24 @@ Iron Diary Astro es una aplicación de fitness que permite a los usuarios:
   - Añadir/eliminar ejercicios dinámicamente
   - Validación de datos en tiempo real
 
-- 📊 **Dashboard Interactivo**
+- � **Rutinas Predefinidas**
+  - 10+ rutinas diseñadas por expertos
+  - Niveles: Principiante, Intermedio, Avanzado
+  - Categorías: Full Body, Upper Body, Lower Body, Push-Pull-Legs
+  - Carga automática de ejercicios al seleccionar rutina
+  - Tiempo estimado y descansos incluidos
+
+- � **Dashboard Interactivo**
   - Visualización de entrenamientos recientes
   - Estadísticas de progreso
   - Navegación intuitiva
   - Diseño responsive
+
+- 🔐 **Autenticación y Sesiones**
+  - Sistema de login y registro
+  - Gestión de sesiones con Supabase
+  - Protección de rutas
+  - Datos persistentes en la nube
 
 - 🎨 **Experiencia de Usuario**
   - Autocompletado con navegación por teclado
@@ -48,29 +61,39 @@ Iron Diary Astro es una aplicación de fitness que permite a los usuarios:
 
 ### 🔄 Flujo de Trabajo
 1. **Dashboard** → Ver entrenamientos y estadísticas
-2. **Nuevo Entrenamiento** → Formulario con autocompletado
-3. **Registro de Ejercicios** → GIFs demostrativos incluidos
-4. **Guardado** → Datos procesados y almacenados
+2. **Rutinas Predefinidas** → Explorar y seleccionar rutinas expertas
+3. **Nuevo Entrenamiento** → Formulario con autocompletado o carga automática
+4. **Registro de Ejercicios** → GIFs demostrativos incluidos
+5. **Guardado** → Datos procesados y almacenados en Supabase
 
 ## 📁 Estructura del Proyecto
 
 ```
 iron-diary-astro/
-├── backend/
-│   ├── main.py              # API FastAPI
-│   └── requirements.txt     # Dependencias Python
 ├── frontend/
 │   ├── src/
-│   │   ├── components/      # Componentes React
+│   │   ├── components/      # Componentes React y Astro
 │   │   │   ├── DemoBanner.astro
-│   │   │   ├── MuscleMap.tsx  # (Eliminado)
-│   │   │   └── WorkoutCard.tsx
-│   │   ├── pages/           # Páginas Astro
-│   │   │   ├── index.astro
-│   │   │   ├── dashboard.astro
-│   │   │   └── workout.astro
-│   │   └── styles/
-│   │       └── global.css
+│   │   │   ├── WorkoutCard.tsx
+│   │   │   └── autocomplete.js
+│   │   ├── data/            # Datos y configuraciones
+│   │   │   ├── exercises.ts
+│   │   │   └── preset-routines.ts
+│   │   ├── lib/             # Librerías y utilidades
+│   │   │   ├── supabase.ts
+│   │   │   └── session-manager.js
+│   │   ├── layouts/         # Layouts de Astro
+│   │   │   ├── Layout.astro
+│   │   │   └── SessionProtectedLayout.astro
+│   │   └── pages/           # Páginas principales
+│   │       ├── index.astro
+│   │       ├── dashboard-user.astro
+│   │       ├── workout.astro
+│   │       ├── routines.astro
+│   │       ├── login.astro
+│   │       └── register.astro
+│   ├── public/              # Archivos estáticos
+│   │   └── supabase-client.js
 │   └── package.json         # Dependencias Node.js
 └── README.md
 ```
@@ -79,8 +102,8 @@ iron-diary-astro/
 
 ### Prerrequisitos
 - Node.js 18+
-- Python 3.8+
 - npm o yarn
+- Cuenta en Supabase
 
 ### 1. Clonar el Repositorio
 ```bash
@@ -88,47 +111,62 @@ git clone <repository-url>
 cd iron-diary-astro
 ```
 
-### 2. Configurar el Backend
+### 2. Configurar Supabase
+1. Crea un nuevo proyecto en [Supabase](https://supabase.com)
+2. Ejecuta el siguiente SQL en el editor de Supabase para crear la tabla:
+```sql
+CREATE TABLE entrenamientos (
+    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+    id_usuario UUID REFERENCES auth.users(id) ON DELETE CASCADE,
+    fecha TEXT NOT NULL,
+    nombre_rutina TEXT NOT NULL,
+    ejercicios JSONB NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW()
+);
 
-#### Opción A: Instalar dependencias y ejecutar
-```bash
-cd backend
-pip install -r requirements.txt
-uvicorn main:app --reload --host 127.0.0.1 --port 8000
+-- Habilitar RLS
+ALTER TABLE entrenamientos ENABLE ROW LEVEL SECURITY;
+
+-- Políticas de seguridad
+CREATE POLICY "Los usuarios pueden ver sus propios entrenamientos" ON entrenamientos
+    FOR SELECT USING (auth.uid() = id_usuario);
+
+CREATE POLICY "Los usuarios pueden insertar sus propios entrenamientos" ON entrenamientos
+    FOR INSERT WITH CHECK (auth.uid() = id_usuario);
+
+CREATE POLICY "Los usuarios pueden actualizar sus propios entrenamientos" ON entrenamientos
+    FOR UPDATE USING (auth.uid() = id_usuario);
+
+CREATE POLICY "Los usuarios pueden eliminar sus propios entrenamientos" ON entrenamientos
+    FOR DELETE USING (auth.uid() = id_usuario);
 ```
 
-#### Opción B: Si uvicorn no está reconocido (Windows)
-```bash
-cd backend
-pip install fastapi uvicorn[standard]
-python -m uvicorn main:app --reload --host 127.0.0.1 --port 8000
+### 3. Configurar Variables de Entorno
+Crea un archivo `.env` en `frontend/`:
+```env
+PUBLIC_SUPABASE_URL=https://tu-proyecto.supabase.co
+PUBLIC_SUPABASE_ANON_KEY=tu-key-anonima
 ```
 
-#### Opción C: Usar Python directamente (si uvicorn no está en PATH)
-```bash
-cd backend
-pip install -r requirements.txt
-python -m uvicorn main:app --reload --host 127.0.0.1 --port 8000
-```
-
-#### Solución de problemas comunes:
-- **Error: "uvicorn is not recognized"** → Usa `python -m uvicorn` en lugar de `uvicorn`
-- **Error: "No module named uvicorn"** → Ejecuta `pip install uvicorn[standard]`
-- **Error: "No module named fastapi"** → Ejecuta `pip install fastapi`
-
-### 3. Configurar el Frontend
+### 4. Configurar el Frontend
 ```bash
 cd frontend
 npm install
 npm run dev
 ```
 
-### 4. Acceder a la Aplicación
+### 5. Acceder a la Aplicación
 - **Frontend**: http://localhost:4321
-- **Backend API**: http://localhost:8000
-- **API Documentation**: http://localhost:8000/docs
 
 ## 🎯 Uso de la Aplicación
+
+### Usar Rutinas Predefinidas
+1. Haz clic en **"Rutinas"** en el menú de navegación
+2. Filtra por dificultad (principiante, intermedio, avanzado) o categoría
+3. Explora las rutinas disponibles con descripciones y tiempos estimados
+4. Haz clic en **"Ver Detalles"** para ver todos los ejercicios
+5. Selecciona **"Usar Rutina"** para cargarla automáticamente en el formulario
 
 ### Crear un Nuevo Entrenamiento
 1. Haz clic en **"Nuevo Entrenamiento"** en el dashboard
