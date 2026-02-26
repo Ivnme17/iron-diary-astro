@@ -1,6 +1,7 @@
 ---
 import SessionProtectedLayout from '../layouts/SessionProtectedLayout.astro';
 import { Dumbbell, ArrowLeft, Save, Plus } from 'lucide-react';
+import { EXERCISES_LIST, ROUTINES_LIST } from '../data/exercises';
 ---
 
 <SessionProtectedLayout title="Entrenamiento">
@@ -21,7 +22,7 @@ import { Dumbbell, ArrowLeft, Save, Plus } from 'lucide-react';
         <form id="workoutForm" class="space-y-6">
             <!-- Basic Info -->
             <div class="grid gap-4 sm:grid-cols-2">
-                <div>
+                <div class="relative">
                     <label for="routineName" class="block text-sm font-medium text-foreground mb-2">
                         Nombre de Rutina
                     </label>
@@ -33,6 +34,8 @@ import { Dumbbell, ArrowLeft, Save, Plus } from 'lucide-react';
                         class="w-full h-10 rounded-md border border-border bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                         required
                     />
+                    <!-- Sugerencias de rutinas -->
+                    <div id="routineSuggestions" class="absolute z-50 w-full mt-1 max-h-60 overflow-auto rounded-md border border-border bg-popover shadow-lg hidden"></div>
                 </div>
                 <div>
                     <label for="workoutDate" class="block text-sm font-medium text-foreground mb-2">
@@ -62,9 +65,11 @@ import { Dumbbell, ArrowLeft, Save, Plus } from 'lucide-react';
                     <!-- Exercise 1 (default) -->
                     <div class="exercise-item rounded-lg border border-border p-4">
                         <div class="grid gap-4 sm:grid-cols-4">
-                            <div class="sm:col-span-2">
+                            <div class="sm:col-span-2 relative">
                                 <label class="block text-sm font-medium text-foreground mb-2">Nombre del Ejercicio</label>
                                 <input type="text" name="exerciseName" placeholder="Ej: Press de Banca" class="w-full h-10 rounded-md border border-border bg-background px-3 py-2 text-sm" required />
+                                <!-- Sugerencias de ejercicios -->
+                                <div class="exercise-suggestions absolute z-50 w-full mt-1 max-h-60 overflow-auto rounded-md border border-border bg-popover shadow-lg hidden"></div>
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-foreground mb-2">Series</label>
@@ -97,25 +102,94 @@ import { Dumbbell, ArrowLeft, Save, Plus } from 'lucide-react';
     <script>
         import { sessionManager } from '../lib/session-manager.js';
         import { supabaseApi } from '../lib/supabase';
+        import { EXERCISES_LIST, ROUTINES_LIST } from '../data/exercises.js';
 
         // Inicializar gestor de sesiones
         document.addEventListener('DOMContentLoaded', async () => {
             await sessionManager.init();
             sessionManager.setupUserElements();
             
-            // Configurar formulario de entrenamiento
+            // Configurar autocompletado simple
+            setupSimpleAutocomplete('routineName', 'routineSuggestions', ROUTINES_LIST);
+            
+            // Configurar formulario
             setupWorkoutForm();
         });
+
+        function setupSimpleAutocomplete(inputId, suggestionsId, suggestions) {
+            const input = document.getElementById(inputId);
+            const suggestionsDiv = document.getElementById(suggestionsId);
+            
+            if (!input || !suggestionsDiv) return;
+            
+            input.addEventListener('input', () => {
+                const value = input.value.toLowerCase();
+                
+                if (value.length === 0) {
+                    suggestionsDiv.classList.add('hidden');
+                    return;
+                }
+                
+                const filtered = suggestions.filter(s => 
+                    s.toLowerCase().includes(value)
+                );
+                
+                if (filtered.length === 0) {
+                    suggestionsDiv.classList.add('hidden');
+                    return;
+                }
+                
+                suggestionsDiv.innerHTML = '';
+                filtered.forEach(suggestion => {
+                    const div = document.createElement('div');
+                    div.className = 'px-3 py-2 text-sm cursor-pointer hover:bg-accent hover:text-accent-foreground';
+                    
+                    // Resaltar coincidencia
+                    const regex = new RegExp(`(${input.value})`, 'gi');
+                    div.innerHTML = suggestion.replace(regex, '<strong class="font-bold text-primary">$1</strong>');
+                    
+                    div.addEventListener('click', () => {
+                        input.value = suggestion;
+                        suggestionsDiv.classList.add('hidden');
+                    });
+                    
+                    suggestionsDiv.appendChild(div);
+                });
+                
+                suggestionsDiv.classList.remove('hidden');
+            });
+            
+            // Cerrar al hacer clic fuera
+            document.addEventListener('click', (e) => {
+                if (!input.contains(e.target) && !suggestionsDiv.contains(e.target)) {
+                    suggestionsDiv.classList.add('hidden');
+                }
+            });
+            
+            // Cerrar con Escape
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    suggestionsDiv.classList.add('hidden');
+                }
+            });
+        }
 
         function setupWorkoutForm() {
             const form = document.getElementById('workoutForm');
             const addExerciseBtn = document.getElementById('addExercise');
             const exercisesContainer = document.getElementById('exercisesContainer');
             
-            // Establecer fecha actual por defecto
+            // Establecer fecha actual
             const dateInput = document.getElementById('workoutDate');
             if (dateInput) {
                 dateInput.value = new Date().toISOString().split('T')[0];
+            }
+
+            // Configurar autocompletado para el primer ejercicio
+            const firstExerciseInput = document.querySelector('input[name="exerciseName"]');
+            const firstExerciseSuggestions = firstExerciseInput?.nextElementSibling;
+            if (firstExerciseInput && firstExerciseSuggestions) {
+                setupSimpleAutocompleteForInput(firstExerciseInput, firstExerciseSuggestions, EXERCISES_LIST);
             }
 
             // Agregar ejercicio
@@ -124,9 +198,10 @@ import { Dumbbell, ArrowLeft, Save, Plus } from 'lucide-react';
                 exerciseDiv.className = 'exercise-item rounded-lg border border-border p-4';
                 exerciseDiv.innerHTML = `
                     <div class="grid gap-4 sm:grid-cols-4">
-                        <div class="sm:col-span-2">
+                        <div class="sm:col-span-2 relative">
                             <label class="block text-sm font-medium text-foreground mb-2">Nombre del Ejercicio</label>
                             <input type="text" name="exerciseName" placeholder="Ej: Press de Banca" class="w-full h-10 rounded-md border border-border bg-background px-3 py-2 text-sm" required />
+                            <div class="exercise-suggestions absolute z-50 w-full mt-1 max-h-60 overflow-auto rounded-md border border-border bg-popover shadow-lg hidden"></div>
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-foreground mb-2">Series</label>
@@ -144,9 +219,61 @@ import { Dumbbell, ArrowLeft, Save, Plus } from 'lucide-react';
                     <button type="button" class="remove-exercise mt-2 text-sm text-destructive hover:text-destructive/80">Eliminar Ejercicio</button>
                 `;
                 
-                exercisesContainer.appendChild(exerciseDiv);
+                exercisesContainer?.appendChild(exerciseDiv);
+                
+                // Configurar autocompletado para el nuevo ejercicio
+                const newExerciseInput = exerciseDiv.querySelector('input[name="exerciseName"]');
+                const newExerciseSuggestions = exerciseDiv.querySelector('.exercise-suggestions');
+                if (newExerciseInput && newExerciseSuggestions) {
+                    setupSimpleAutocompleteForInput(newExerciseInput, newExerciseSuggestions, EXERCISES_LIST);
+                }
+                
                 setupRemoveButtons();
             });
+
+            function setupSimpleAutocompleteForInput(input, suggestionsDiv, suggestions) {
+                input.addEventListener('input', () => {
+                    const value = input.value.toLowerCase();
+                    
+                    if (value.length === 0) {
+                        suggestionsDiv.classList.add('hidden');
+                        return;
+                    }
+                    
+                    const filtered = suggestions.filter(s => 
+                        s.toLowerCase().includes(value)
+                    );
+                    
+                    if (filtered.length === 0) {
+                        suggestionsDiv.classList.add('hidden');
+                        return;
+                    }
+                    
+                    suggestionsDiv.innerHTML = '';
+                    filtered.forEach(suggestion => {
+                        const div = document.createElement('div');
+                        div.className = 'px-3 py-2 text-sm cursor-pointer hover:bg-accent hover:text-accent-foreground';
+                        
+                        const regex = new RegExp(`(${input.value})`, 'gi');
+                        div.innerHTML = suggestion.replace(regex, '<strong class="font-bold text-primary">$1</strong>');
+                        
+                        div.addEventListener('click', () => {
+                            input.value = suggestion;
+                            suggestionsDiv.classList.add('hidden');
+                        });
+                        
+                        suggestionsDiv.appendChild(div);
+                    });
+                    
+                    suggestionsDiv.classList.remove('hidden');
+                });
+                
+                document.addEventListener('click', (e) => {
+                    if (!input.contains(e.target) && !suggestionsDiv.contains(e.target)) {
+                        suggestionsDiv.classList.add('hidden');
+                    }
+                });
+            }
 
             // Configurar botones de eliminar
             function setupRemoveButtons() {
@@ -154,7 +281,7 @@ import { Dumbbell, ArrowLeft, Save, Plus } from 'lucide-react';
                     btn.onclick = function() {
                         const exerciseItems = document.querySelectorAll('.exercise-item');
                         if (exerciseItems.length > 1) {
-                            this.closest('.exercise-item').remove();
+                            this.closest('.exercise-item')?.remove();
                         }
                     };
                 });
@@ -166,25 +293,55 @@ import { Dumbbell, ArrowLeft, Save, Plus } from 'lucide-react';
             form?.addEventListener('submit', async (e) => {
                 e.preventDefault();
                 
+                // Verificar autenticación primero
+                try {
+                    console.log('Verificando autenticación con sessionManager...');
+                    console.log('sessionManager.currentUser:', sessionManager.currentUser);
+                    
+                    if (!sessionManager.currentUser) {
+                        console.error('No hay usuario en sessionManager');
+                        alert('Debes estar autenticado para guardar entrenamientos. Por favor, inicia sesión nuevamente.');
+                        window.location.href = '/login';
+                        return;
+                    }
+                    
+                    console.log('Usuario autenticado:', sessionManager.currentUser);
+                } catch (error) {
+                    console.error('Error verificando autenticación:', error);
+                    alert('Error de autenticación: ' + (error.message || error));
+                    window.location.href = '/login';
+                    return;
+                }
+                
                 const exercises = [];
                 document.querySelectorAll('.exercise-item').forEach(item => {
-                    const name = item.querySelector('input[name="exerciseName"]').value;
-                    const sets = parseInt(item.querySelector('input[name="sets"]').value);
-                    const reps = parseInt(item.querySelector('input[name="reps"]').value);
-                    const weight = parseFloat(item.querySelector('input[name="weight"]').value);
+                    const name = item.querySelector('input[name="exerciseName"]')?.value || '';
+                    const sets = parseInt(item.querySelector('input[name="sets"]')?.value || '0');
+                    const reps = parseInt(item.querySelector('input[name="reps"]')?.value || '0');
+                    const weight = parseFloat(item.querySelector('input[name="weight"]')?.value || '0');
                     
-                    exercises.push({
-                        id: Date.now().toString() + Math.random(),
-                        name,
-                        sets,
-                        reps,
-                        weight
-                    });
+                    if (name && sets && reps && weight >= 0) {
+                        exercises.push({
+                            id: Date.now().toString() + Math.random(),
+                            name,
+                            sets,
+                            reps,
+                            weight
+                        });
+                    }
                 });
 
+                const routineName = document.getElementById('routineName')?.value || '';
+                const workoutDate = document.getElementById('workoutDate')?.value || '';
+
+                if (!routineName || !workoutDate || exercises.length === 0) {
+                    alert('Por favor completa todos los campos del formulario');
+                    return;
+                }
+
                 const workoutData = {
-                    nombre_rutina: document.getElementById('routineName').value,
-                    fecha: document.getElementById('workoutDate').value,
+                    nombre_rutina: routineName,
+                    fecha: workoutDate,
                     ejercicios: exercises
                 };
 
@@ -194,7 +351,7 @@ import { Dumbbell, ArrowLeft, Save, Plus } from 'lucide-react';
                     window.location.href = '/dashboard-user';
                 } catch (error) {
                     console.error('Error saving workout:', error);
-                    alert('Error al guardar el entrenamiento');
+                    alert('Error al guardar el entrenamiento: ' + error.message);
                 }
             });
         }

@@ -1,10 +1,7 @@
-import { createClient } from '@supabase/supabase-js'
+import { supabase as supabaseClient } from '../../public/supabase-client.js';
 
-// Configuración de Supabase
-const supabaseUrl = import.meta.env.PUBLIC_SUPABASE_URL
-const supabaseAnonKey = import.meta.env.PUBLIC_SUPABASE_ANON_KEY
-
-export const supabase = createClient(supabaseUrl, supabaseAnonKey)
+// Exportar para uso en otros archivos
+export const supabase = supabaseClient;
 
 // Tipos de datos para TypeScript
 export interface User {
