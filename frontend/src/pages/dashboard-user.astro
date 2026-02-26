@@ -202,11 +202,11 @@ try {
                 try {
                     const { supabaseApi } = await import('../lib/supabase');
                     
-                    // Obtener todos los entrenamientos del usuario
-                    const { data: workouts } = await supabaseApi.getWorkouts();
+                    // Obtener todos los entrenamientos del usuario directamente
+                    const { data: workoutsData } = await supabaseApi.getWorkouts();
                     
                     // Eliminar cada entrenamiento
-                    for (const workout of workouts) {
+                    for (const workout of workoutsData) {
                         await supabaseApi.deleteWorkout(workout.id);
                     }
                     
@@ -226,6 +226,29 @@ try {
         document.addEventListener('DOMContentLoaded', async () => {
             await sessionManager.init();
             sessionManager.setupUserElements();
+            
+            // Hacer la función global para que esté disponible en el onclick
+            window.clearAllWorkouts = async function() {
+                if (confirm('¿Estás seguro de que quieres eliminar TODOS los entrenamientos? Esta acción no se puede deshacer.')) {
+                    try {
+                        const { supabaseApi } = await import('../lib/supabase');
+                        
+                        // Obtener todos los entrenamientos del usuario directamente
+                        const { data: workoutsData } = await supabaseApi.getWorkouts();
+                        
+                        // Eliminar cada entrenamiento
+                        for (const workout of workoutsData) {
+                            await supabaseApi.deleteWorkout(workout.id);
+                        }
+                        
+                        // Recargar la página
+                        window.location.reload();
+                    } catch (error) {
+                        console.error('Error al eliminar entrenamientos:', error);
+                        alert('Error al eliminar los entrenamientos. Por favor, inténtalo de nuevo.');
+                    }
+                }
+            };
         });
     </script>
 </body>
